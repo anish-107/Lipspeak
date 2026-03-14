@@ -4,6 +4,7 @@
 # @created 30-01-2026
 # @updated 14-03-2026
 # @returns A List of files to ignore.
+#
 
 
 # Node Related
@@ -60,5 +61,4 @@
 
 
 
-# Temporary Files & Directories
-trash/
+# Temporary Files & Directories 

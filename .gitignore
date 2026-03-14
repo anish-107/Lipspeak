@@ -1,9 +1,9 @@
 # .gitignore
-# @authors Anish, Bidipta, Dibyasmita
+# @authors Anish, Bidipta, Dibyasmita, Arpan
 # @description Specifies the files and directories to be ignored by Git version control.
 # @created 30-01-2026
-# @updated 30-01-2026
-# @returns N/A
+# @updated 14-03-2026
+# @returns A List of files to ignore.
 
 
 # Node Related
@@ -44,6 +44,14 @@
 
 
 
+# Flutter Related
+
+
+
+# IoT Related
+
+
+
 # Logs
 
 
@@ -53,13 +61,4 @@
 
 
 # Temporary Files & Directories
-core/
-core-test/
-datasets/
-docs/
-main/
-main-test/
-resources/
-temp/
 trash/
-app/

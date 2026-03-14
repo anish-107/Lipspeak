@@ -1,0 +1,65 @@
+# .gitignore
+# @authors Anish, Bidipta, Dibyasmita
+# @description Specifies the files and directories to be ignored by Git version control.
+# @created 30-01-2026
+# @updated 30-01-2026
+# @returns N/A
+
+
+# Node Related
+
+
+
+
+# FastAPI Related
+
+
+
+
+# Python Related
+
+
+
+
+# Intermediate Files
+
+
+
+# Executables
+
+
+
+# IDE Related
+
+
+
+
+# OS Related
+
+
+
+
+# Android Related
+
+
+
+
+# Logs
+
+
+
+# Environment Files
+
+
+
+# Temporary Files & Directories
+core/
+core-test/
+datasets/
+docs/
+main/
+main-test/
+resources/
+temp/
+trash/
+app/

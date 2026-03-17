@@ -1,0 +1,8 @@
+
+
+# Environment variables
+.env
+
+assets/*.keras
+assets/*.dat
+assets/*

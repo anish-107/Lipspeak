@@ -1,46 +1,66 @@
 import cv2
-import dlib # pyright: ignore
 import tensorflow as tf
+import mediapipe as mp
+from mediapipe.tasks import python
+from mediapipe.tasks.python import vision
 from app.config import settings
 
+# 1. Initialize Face Landmarker (New API)
+model_path: str = str(settings.face_landmarker_path)
 
-detector = dlib.get_frontal_face_detector()
-predictor = dlib.shape_predictor(str(settings.dlib_landmark_path))
+base_options = python.BaseOptions(model_asset_path=model_path)
+options = vision.FaceLandmarkerOptions(
+    base_options=base_options,
+    running_mode=vision.RunningMode.IMAGE, # Use IMAGE mode for single frames
+    num_faces=1
+)
+detector = vision.FaceLandmarker.create_from_options(options)
 
-MOUTH_POINTS = list(range(48, 61))
-
+# EXACT MediaPipe landmarks for the outer and inner lips
+MOUTH_LANDMARKS = [
+    61, 146, 91, 181, 84, 17, 314, 405, 321, 375, 291, 185, 40, 39, 37, 0, 267, 
+    269, 270, 409, 78, 95, 88, 178, 87, 14, 317, 402, 318, 324, 308, 191, 80, 81, 
+    82, 13, 312, 311, 310, 415
+]
 
 def get_mouth_roi(frame):
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    faces = detector(gray)
+    # Convert OpenCV BGR to MediaPipe Image object
+    rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb_frame)
 
-    if len(faces) == 0:
+    # 2. Perform Detection (New API)
+    results = detector.detect(mp_image)
+
+    # Results are now in a FaceLandmarkerResult object
+    if not results.face_landmarks:
         return None
 
-    landmarks = predictor(gray, faces[0])
+    # Access the first face's landmarks
+    landmarks = results.face_landmarks[0]
+    h, w, _ = frame.shape
 
-    xs = [landmarks.part(i).x for i in MOUTH_POINTS]
-    ys = [landmarks.part(i).y for i in MOUTH_POINTS]
+    # Extract coordinates 
+    xs = [int(landmarks[i].x * w) for i in MOUTH_LANDMARKS]
+    ys = [int(landmarks[i].y * h) for i in MOUTH_LANDMARKS]
 
-    pad = 30
+    # Reverted padding back to 30 to match Dlib scale
+    pad = 30 
     min_x = max(0, min(xs) - pad)
-    max_x = min(frame.shape[1], max(xs) + pad)
+    max_x = min(w, max(xs) + pad)
     min_y = max(0, min(ys) - pad)
-    max_y = min(frame.shape[0], max(ys) + pad)
+    max_y = min(h, max(ys) + pad)
 
     return min_y, max_y, min_x, max_x
-
 
 def load_video(path):
     cap = cv2.VideoCapture(path)
     raw_frames = []
-
+    
+    # Removed the frame_skip logic. We need every frame for lip reading!
     while True:
         ret, frame = cap.read()
-        if not ret:
-            break
+        if not ret: break
         raw_frames.append(frame)
-
     cap.release()
 
     if len(raw_frames) < 10:
@@ -55,7 +75,6 @@ def load_video(path):
         raise ValueError("No face/mouth detected in the video.")
 
     min_y, max_y, min_x, max_x = roi
-
     processed_frames = []
 
     for frame in raw_frames:
@@ -72,22 +91,16 @@ def load_video(path):
         raise ValueError("Could not extract valid mouth frames.")
 
     frames_tensor = tf.stack(processed_frames)
-
     mean = tf.reduce_mean(frames_tensor)
     std = tf.math.reduce_std(tf.cast(frames_tensor, tf.float32))
     frames_tensor = tf.cast(frames_tensor - mean, tf.float32) / (std + 1e-6)
 
     curr_len = frames_tensor.shape[0]
-
     if curr_len > settings.MAX_FRAMES:
         frames_tensor = frames_tensor[:settings.MAX_FRAMES]
     elif curr_len < settings.MAX_FRAMES:
-        paddings = tf.constant([
-            [0, settings.MAX_FRAMES - curr_len],
-            [0, 0],
-            [0, 0],
-            [0, 0]
-        ])
+        # Made sure CONSTANT is explicitly defined, same as Dlib code
+        paddings = tf.constant([[0, settings.MAX_FRAMES - curr_len], [0, 0], [0, 0], [0, 0]])
         frames_tensor = tf.pad(frames_tensor, paddings, "CONSTANT")
 
     return frames_tensor

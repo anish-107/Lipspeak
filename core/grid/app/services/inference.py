@@ -22,11 +22,16 @@ class InferenceService:
             compile=False
         )
 
+        dummy = tf.zeros(
+            (1, settings.MAX_FRAMES, settings.FRAME_HEIGHT, settings.FRAME_WIDTH, 1)
+        )
+        self.model.predict(dummy, verbose=0)
+
     def decode(self, yhat):
         decoded = tf.keras.backend.ctc_decode(
             yhat,
             input_length=[settings.MAX_FRAMES],
-            greedy=True
+            greedy=False
         )[0][0]
 
         return decoded

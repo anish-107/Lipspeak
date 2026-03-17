@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     UPLOAD_DIR: str
     MODEL_PATH: str
     DLIB_LANDMARK_PATH: str
+    FACE_LANDMARKER_PATH: str
 
     MAX_FRAMES: int
     FRAME_WIDTH: int
@@ -28,6 +29,10 @@ class Settings(BaseSettings):
     @property
     def dlib_landmark_path(self) -> Path:
         return self.BASE_DIR / self.DLIB_LANDMARK_PATH
+        
+    @property
+    def face_landmarker_path(self) -> Path:
+        return self.BASE_DIR / self.FACE_LANDMARKER_PATH
 
 
 settings = Settings() # type: ignore

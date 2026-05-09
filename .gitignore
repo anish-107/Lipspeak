@@ -1,0 +1,175 @@
+# .gitignore
+# @author Anish Kumar
+# @description This file specifies intentionally untracked files to ignore.
+# @date 10 May 2026
+# @returns A list of files and directories to ignore.
+# 
+
+
+# Virutal Environment
+venv/
+.env/
+.env.*
+env/
+ENV/
+.venv/
+pythonenv/
+pip-log.txt
+pip-delete-this-directory.txt
+
+
+# Python Files
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+*.sqlite3
+*.db
+.coverage
+coverage.xml
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+.dmypy.json
+.pyre/
+.ipynb_checkpoints/
+
+
+# Javascript Files
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+yarn.lock
+.pnpm-store/
+.next/
+out/
+dist/
+build/
+.cache/
+.eslintcache
+
+
+# C++ Files
+*.o
+*.obj
+*.out
+*.exe
+*.app
+*.so
+*.dll
+*.dylib
+*.a
+*.lib
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+compile_commands.json
+
+
+# Java/Kotlin Files
+*.class
+*.jar
+*.war
+*.ear
+.gradle/
+build/
+out/
+.idea/
+*.iml
+local.properties
+captures/
+
+
+# Flutter Files
+.dart_tool/
+.packages
+.pub-cache/
+.pub/
+build/
+ios/Flutter/.last_build_id
+android/.gradle/
+android/app/debug/
+android/app/profile/
+android/app/release/
+
+
+# React Files
+node_modules/
+build/
+dist/
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+coverage/
+.cache/
+
+
+# FastAPI Files
+*.log
+*.pid
+*.sqlite3
+instance/
+.env
+__pycache__/
+.mypy_cache/
+.pytest_cache/
+
+
+# Important Variables
+.env
+.env.local
+.env.*.local
+secrets.json
+config.json
+credentials.json
+*.key
+*.pem
+
+
+# Document Files
+*.pdf
+*.doc
+*.docx
+*.ppt
+*.pptx
+*.xls
+*.xlsx
+*.csv
+
+
+# Large Files
+*.zip
+*.tar
+*.gz
+*.7z
+*.rar
+*.iso
+*.dmg
+*.mp4
+*.mkv
+*.avi
+
+
+# Temporary Files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+desktop.ini
+.cache/
+logs/

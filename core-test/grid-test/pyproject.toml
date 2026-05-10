@@ -1,0 +1,30 @@
+[project]
+name = "grid-test"
+version = "0.1.0"
+description = "This backend serves as the testing implementation of grid model."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "celery>=5.6.3",
+    "fastapi[standard]>=0.136.1",
+    "flower>=2.0.1",
+    "mediapipe>=0.10.35",
+    "numpy>=2.4.4",
+    "opencv-python>=4.13.0.92",
+    "pydantic-settings>=2.14.1",
+    "pytest>=9.0.3",
+    "pytest-cov>=7.1.0",
+    "python-multipart>=0.0.27",
+    "rapidfuzz>=3.14.5",
+    "redis>=7.4.0",
+    "tensorflow>=2.21.0",
+    "typing>=3.10.0.0",
+    "uvicorn>=0.46.0",
+]
+
+[dependency-groups]
+dev = [
+    "black>=26.3.1",
+    "isort>=8.0.1",
+    "ruff>=0.15.12",
+]

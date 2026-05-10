@@ -1,0 +1,16 @@
+# .gitignore
+# @authors: Anish Kumar, Bidipta Barua, Dibyasmita Hati, Arpan Haldar
+# @description: This file contains the files to ignore for the project.
+# @date 10 May 2026
+# @returns List of files and directories to be ignored by Git.
+# 
+
+
+models/
+uploads/
+__pycache__/
+.pytest_cache/
+.venv/
+.coverage
+data/
+TODO.txt

@@ -1,0 +1,44 @@
+version: "3.9"
+
+services:
+
+  lipspeak-api:
+
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+
+    container_name: lipspeak-api
+
+    ports:
+      - "8000:8000"
+
+    volumes:
+      - ../uploads:/app/uploads
+      - ../models:/app/models
+
+    env_file:
+      - ../.env
+
+    restart: unless-stopped
+
+    command: >
+      uvicorn app.main:app
+      --host 0.0.0.0
+      --port 8000
+
+    depends_on:
+      - redis
+
+
+
+  redis:
+
+    image: redis:7-alpine
+
+    container_name: lipspeak-redis
+
+    ports:
+      - "6379:6379"
+
+    restart: unless-stopped

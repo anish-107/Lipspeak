@@ -1,31 +1,53 @@
-// src/app/(dashboard)/dashboard/layout.tsx
-
-/**
+/** layout.tsx
  * @authors: Anish Kumar, Bidipta Barua, Dibyasmita Hati, Arpan Haldar
- * @description: Dashboard layout with sidebar and header.
- * @date: 10 May 2026
+ * @description: Dashboard layout with responsive sidebar and header.
+ * @date: 10 June 2026
  * @returns: Dashboard layout component.
+ *
  */
 
-import { Sidebar } from "@/components/dashboard/Sidebar";
+
+// Imports
+import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 
+
+// Props Interface
 interface DashboardLayoutProps {
   children: React.ReactNode;
 }
 
+
+// Dashboard Layout
 export default function DashboardLayout({
   children,
 }: Readonly<DashboardLayoutProps>) {
+  // Render
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div
+      className="
+        min-h-screen
+        bg-background
+        text-foreground
+      "
+    >
       <div className="flex">
-        <Sidebar />
+        {/* Desktop Sidebar */}
+        <DashboardSidebar />
 
-        <div className="flex-1">
+        {/* Content */}
+        <div className="min-w-0 flex-1">
           <DashboardHeader />
 
-          <main className="p-6 md:p-10">
+          <main
+            className="
+              mx-auto
+              max-w-7xl
+              p-4
+              md:p-6
+              lg:p-8
+            "
+          >
             {children}
           </main>
         </div>

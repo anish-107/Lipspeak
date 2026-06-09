@@ -1,38 +1,88 @@
-// src/app/(dashboard)/dashboard/pre-recorded/page.tsx
-
-/**
+/** page.tsx
  * @authors: Anish Kumar, Bidipta Barua, Dibyasmita Hati, Arpan Haldar
- * @description: Pre-recorded video analysis dashboard page.
- * @date: 10 May 2026
- * @returns: Video upload analysis page component.
+ * @description: Pre-recorded video analysis page.
+ * @date: 10 June 2026
+ * @returns: Pre-recorded analysis page.
+ *
  */
+
+
+// Client Component
+"use client";
+
+
+// Imports
+import { usePreRecorded } from "@/hooks/usePreRecorded";
 
 import { VideoUploader } from "@/components/prerecorded/VideoUploader";
 import { VideoPlayer } from "@/components/prerecorded/VideoPlayer";
 import { ResultsPanel } from "@/components/prerecorded/ResultsPanel";
 
+
+// Pre Recorded Page
 export default function PreRecordedPage() {
+  /* ---------------------------------------------------------------------- */
+  /*                                 Hook                                   */
+  /* ---------------------------------------------------------------------- */
+
+  const {
+    videoFile,
+    videoUrl,
+    transcript,
+    loading,
+    handleVideoSelect,
+    processVideo,
+  } = usePreRecorded();
+
+  /* ---------------------------------------------------------------------- */
+  /*                                Render                                  */
+  /* ---------------------------------------------------------------------- */
+
   return (
-    <section className="space-y-10">
+    <section className="space-y-8">
+      {/* Page Header */}
       <div>
-        <h1 className="text-4xl font-black tracking-tight">
+        <h1
+          className="
+            text-4xl
+            font-black
+            tracking-tight
+          "
+        >
           Pre-Recorded Analysis
         </h1>
 
-        <p className="mt-3 text-zinc-400">
-          Upload videos and generate AI-powered speech predictions.
+        <p
+          className="
+            mt-3
+            text-muted-foreground
+          "
+        >
+          Upload a video and generate
+          AI-powered speech transcripts.
         </p>
       </div>
 
-      <div className="grid gap-8 xl:grid-cols-[1.4fr_0.8fr]">
-        <div className="space-y-8">
-          <VideoUploader />
+      {/* Upload */}
+      <VideoUploader
+        selectedFile={videoFile}
+        onVideoSelect={
+          handleVideoSelect
+        }
+      />
 
-          <VideoPlayer />
-        </div>
+      {/* Preview */}
+      <VideoPlayer
+        videoUrl={videoUrl}
+      />
 
-        <ResultsPanel />
-      </div>
+      {/* Results */}
+      <ResultsPanel
+        transcript={transcript}
+        loading={loading}
+        hasVideo={!!videoFile}
+        onAnalyze={processVideo}
+      />
     </section>
   );
 }

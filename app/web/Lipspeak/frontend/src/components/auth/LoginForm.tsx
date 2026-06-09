@@ -1,89 +1,284 @@
-// src/components/auth/LoginForm.tsx
-
-/**
+/** LoginForm.tsx
  * @authors: Anish Kumar, Bidipta Barua, Dibyasmita Hati, Arpan Haldar
- * @description: Reusable login form component with futuristic UI styling.
- * @date: 10 May 2026
+ * @description: Authentication form for user login.
+ * @date: 10 June 2026
  * @returns: Login form component.
+ *
  */
 
+
+// Client Component
 "use client";
 
+
+// Imports
+import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Loader2 } from "lucide-react";
+import { Loader2, LogIn } from "lucide-react";
+
 import { Button } from "@/components/ui/shadcn/button";
 import { Input } from "@/components/ui/shadcn/input";
-import { useAuth } from "@/hooks/useAuth";
 
+import { authService } from "@/services/api/auth.service";
+import { useAuthStore } from "@/store/auth.store";
+
+
+// LoginForm Component
 export function LoginForm() {
-  const {
-    loginForm,
-    loginLoading,
-    handleLoginChange,
-    handleLoginSubmit,
-  } = useAuth();
+  // Router
+  const router = useRouter();
+
+  // Store
+  const login = useAuthStore(
+    (state) => state.login,
+  );
+
+  // State
+  const [username, setUsername] =
+    useState("");
+
+  const [password, setPassword] =
+    useState("");
+
+  const [error, setError] =
+    useState("");
+
+  const [loading, setLoading] =
+    useState(false);
+
+  /* ---------------------------------------------------------------------- */
+  /*                             Form Submit                                */
+  /* ---------------------------------------------------------------------- */
+
+  const handleSubmit = async (
+    event: React.FormEvent<HTMLFormElement>,
+  ) => {
+    event.preventDefault();
+
+    setError("");
+
+    if (!username.trim()) {
+      setError("Username is required.");
+      return;
+    }
+
+    if (!password.trim()) {
+      setError("Password is required.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const response =
+        await authService.login({
+          username,
+          password,
+        });
+
+      login(
+        response.token,
+        response.user,
+      );
+
+      router.push("/dashboard");
+    } catch (error) {
+      console.error(error);
+
+      setError(
+        "Invalid username or password.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /* ---------------------------------------------------------------------- */
+  /*                                Render                                  */
+  /* ---------------------------------------------------------------------- */
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="rounded-[32px] border border-white/10 bg-zinc-900/60 p-8 backdrop-blur-2xl"
+      initial={{
+        opacity: 0,
+        y: 20,
+      }}
+      animate={{
+        opacity: 1,
+        y: 0,
+      }}
+      transition={{
+        duration: 0.4,
+      }}
+      className="
+        glass-card
+        ai-border
+        rounded-3xl
+        p-6
+        shadow-2xl
+        md:p-8
+      "
     >
+      {/* Header */}
+      <div className="mb-8 text-center">
+        <h2
+          className="
+            text-2xl
+            font-black
+            tracking-tight
+            md:text-3xl
+          "
+        >
+          Sign In
+        </h2>
+
+        <p
+          className="
+            mt-3
+            text-sm
+            text-muted-foreground
+          "
+        >
+          Continue to your LipSpeak AI dashboard.
+        </p>
+      </div>
+
+      {/* Form */}
       <form
-        onSubmit={handleLoginSubmit}
-        className="space-y-6"
+        onSubmit={handleSubmit}
+        className="space-y-5"
       >
+        {/* Username */}
         <div className="space-y-2">
-          <label className="text-sm text-zinc-300">
-            Email Address
+          <label
+            htmlFor="username"
+            className="
+              text-sm
+              font-medium
+            "
+          >
+            Username
           </label>
 
           <Input
-            type="email"
-            name="email"
-            placeholder="Enter your email"
-            value={loginForm.email}
-            onChange={handleLoginChange}
-            className="h-12 rounded-xl border-zinc-700 bg-zinc-950"
+            id="username"
+            type="text"
+            placeholder="Enter your username"
+            value={username}
+            onChange={(event) =>
+              setUsername(
+                event.target.value,
+              )
+            }
+            className="
+              h-12
+              rounded-xl
+            "
           />
         </div>
 
+        {/* Password */}
         <div className="space-y-2">
-          <label className="text-sm text-zinc-300">
+          <label
+            htmlFor="password"
+            className="
+              text-sm
+              font-medium
+            "
+          >
             Password
           </label>
 
           <Input
+            id="password"
             type="password"
-            name="password"
             placeholder="Enter your password"
-            value={loginForm.password}
-            onChange={handleLoginChange}
-            className="h-12 rounded-xl border-zinc-700 bg-zinc-950"
+            value={password}
+            onChange={(event) =>
+              setPassword(
+                event.target.value,
+              )
+            }
+            className="
+              h-12
+              rounded-xl
+            "
           />
         </div>
 
+        {/* Error */}
+        {error && (
+          <div
+            className="
+              rounded-xl
+              border
+              border-red-500/20
+              bg-red-500/10
+              px-4
+              py-3
+              text-sm
+              text-red-500
+            "
+          >
+            {error}
+          </div>
+        )}
+
+        {/* Submit */}
         <Button
           type="submit"
-          disabled={loginLoading}
-          className="h-12 w-full rounded-xl bg-indigo-600 hover:bg-indigo-500"
+          disabled={loading}
+          className="
+            h-12
+            w-full
+            rounded-xl
+            bg-linear-to-r
+            from-indigo-600
+            via-purple-600
+            to-cyan-600
+            transition-all
+            duration-300
+            hover:scale-[1.02]
+          "
         >
-          {loginLoading ? (
-            <Loader2 className="h-5 w-5 animate-spin" />
+          {loading ? (
+            <Loader2
+              className="
+                h-5
+                w-5
+                animate-spin
+              "
+            />
           ) : (
-            "Login"
+            <>
+              <LogIn className="mr-2 h-4 w-4" />
+              Login
+            </>
           )}
         </Button>
       </form>
 
-      <div className="mt-8 text-center text-sm text-zinc-400">
+      {/* Footer */}
+      <div
+        className="
+          mt-8
+          text-center
+          text-sm
+          text-muted-foreground
+        "
+      >
         Don&apos;t have an account?{" "}
         <Link
           href="/signup"
-          className="font-medium text-indigo-400 hover:text-indigo-300"
+          className="
+            font-medium
+            text-primary
+            hover:underline
+          "
         >
-          Sign up
+          Create Account
         </Link>
       </div>
     </motion.div>

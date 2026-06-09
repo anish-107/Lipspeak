@@ -1,33 +1,131 @@
-// src/components/dashboard/DashboardHeader.tsx
-
-/**
+/** DashboardHeader.tsx
  * @authors: Anish Kumar, Bidipta Barua, Dibyasmita Hati, Arpan Haldar
  * @description: Dashboard top navigation header.
- * @date: 10 May 2026
+ * @date: 10 June 2026
  * @returns: Dashboard header component.
+ *
  */
 
+
+// Client Component
+"use client";
+
+
+// Imports
+import { ThemeToggle } from "@/components/common/ThemeToggle";
+import { useAuthStore } from "@/store/auth.store";
+
+
+// Dashboard Header Component
 export function DashboardHeader() {
+  // Store
+  const user = useAuthStore(
+    (state) => state.user,
+  );
+
+  // Logic
+  const currentHour =
+    new Date().getHours();
+
+  const greeting =
+    currentHour < 12
+      ? "Good Morning"
+      : currentHour < 18
+      ? "Good Afternoon"
+      : "Good Evening";
+
+  const avatarLetter =
+    user?.name?.charAt(0)?.toUpperCase() ??
+    "U";
+
+  // Render
   return (
-    <header className="sticky top-0 z-40 border-b border-white/10 bg-black/70 backdrop-blur-2xl">
-      <div className="flex h-20 items-center justify-between px-6 md:px-10">
-        <div>
-          <h1 className="text-xl font-bold">
-            AI Speech Analytics
+    <header
+      className="
+        sticky
+        top-0
+        z-40
+        border-b
+        border-border
+        bg-background/80
+        backdrop-blur-xl
+      "
+    >
+      <div
+        className="
+          flex
+          h-20
+          items-center
+          justify-between
+          px-4
+          md:px-6
+          lg:px-8
+        "
+      >
+        {/* Left */}
+        <div
+          className="
+            min-w-0
+            flex-1
+            pl-12
+            lg:pl-0
+          "
+        >
+          <h1
+            className="
+              truncate
+              text-lg
+              font-bold
+              md:text-xl
+            "
+          >
+            {greeting}
+            {user?.name
+              ? `, ${user.name}`
+              : ""}
           </h1>
 
-          <p className="text-sm text-zinc-500">
-            Neural lip-reading control center
+          <p
+            className="
+              text-sm
+              text-muted-foreground
+            "
+          >
+            Welcome to your LipSpeak AI dashboard.
           </p>
         </div>
 
-        <div className="flex items-center gap-4">
-          <div className="hidden rounded-full border border-white/10 bg-zinc-900/60 px-5 py-2 text-sm text-zinc-400 md:flex">
-            Connected
-          </div>
+        {/* Right */}
+        <div
+          className="
+            flex
+            items-center
+            gap-3
+          "
+        >
+          {/* Theme Toggle */}
+          <ThemeToggle />
 
-          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-r from-indigo-500 to-cyan-500 font-bold">
-            A
+          {/* User Avatar */}
+          <div
+            className="
+              flex
+              h-11
+              w-11
+              items-center
+              justify-center
+              rounded-full
+              bg-linear-to-r
+              from-indigo-500
+              via-cyan-500
+              to-purple-500
+              text-sm
+              font-black
+              text-white
+              shadow-lg
+            "
+          >
+            {avatarLetter}
           </div>
         </div>
       </div>

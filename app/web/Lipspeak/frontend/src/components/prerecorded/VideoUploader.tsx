@@ -1,43 +1,159 @@
-// src/components/prerecorded/VideoUploader.tsx
-
-/**
+/** VideoUploader.tsx
  * @authors: Anish Kumar, Bidipta Barua, Dibyasmita Hati, Arpan Haldar
- * @description: Video upload component for pre-recorded AI analysis.
- * @date: 10 May 2026
+ * @description: Video upload component for pre-recorded speech analysis.
+ * @date: 10 June 2026
  * @returns: Video uploader component.
+ *
  */
 
+
+// Client Component
 "use client";
 
-import { Upload } from "lucide-react";
 
-export function VideoUploader() {
+// Imports
+import { UploadCloud } from "lucide-react";
+
+
+// Props Interface
+interface VideoUploaderProps {
+  onVideoSelect: (
+    file: File,
+  ) => void;
+
+  selectedFile: File | null;
+}
+
+
+// Video Uploader Component
+export function VideoUploader({
+  onVideoSelect,
+  selectedFile,
+}: Readonly<VideoUploaderProps>) {
+  /* ---------------------------------------------------------------------- */
+  /*                              Handlers                                  */
+  /* ---------------------------------------------------------------------- */
+
+  const handleFileChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file =
+      event.target.files?.[0];
+
+    if (!file) return;
+
+    onVideoSelect(file);
+  };
+
+  /* ---------------------------------------------------------------------- */
+  /*                                Render                                  */
+  /* ---------------------------------------------------------------------- */
+
   return (
-    <div className="rounded-[32px] border border-dashed border-indigo-500/30 bg-zinc-900/60 p-10 backdrop-blur-2xl">
-      <div className="flex flex-col items-center justify-center text-center">
-        <div className="flex h-24 w-24 items-center justify-center rounded-full bg-indigo-500/10">
-          <Upload className="h-10 w-10 text-indigo-400" />
-        </div>
-
-        <h2 className="mt-8 text-3xl font-black">
+    <div
+      className="
+        glass-card
+        ai-border
+        rounded-3xl
+        p-6
+      "
+    >
+      <div className="mb-6">
+        <h2
+          className="
+            text-2xl
+            font-bold
+          "
+        >
           Upload Video
         </h2>
 
-        <p className="mt-4 max-w-xl text-zinc-400">
-          Drag and drop your pre-recorded video or browse files
-          for AI speech recognition analysis.
+        <p
+          className="
+            mt-2
+            text-sm
+            text-muted-foreground
+          "
+        >
+          Upload a pre-recorded video
+          for AI-powered speech analysis.
+        </p>
+      </div>
+
+      <label
+        htmlFor="video-upload"
+        className="
+          flex
+          cursor-pointer
+          flex-col
+          items-center
+          justify-center
+          rounded-3xl
+          border-2
+          border-dashed
+          border-primary/30
+          px-6
+          py-14
+          text-center
+          transition-all
+          duration-300
+          hover:border-primary
+          hover:bg-primary/5
+        "
+      >
+        <UploadCloud
+          className="
+            h-14
+            w-14
+            text-primary
+          "
+        />
+
+        <h3
+          className="
+            mt-4
+            text-lg
+            font-semibold
+          "
+        >
+          Select a Video
+        </h3>
+
+        <p
+          className="
+            mt-2
+            text-sm
+            text-muted-foreground
+          "
+        >
+          MP4, MOV or WebM supported.
         </p>
 
-        <label className="mt-8 cursor-pointer rounded-2xl bg-indigo-600 px-6 py-4 font-medium transition-all hover:bg-indigo-500">
-          Choose Video
+        {selectedFile && (
+          <div
+            className="
+              mt-6
+              rounded-xl
+              bg-primary/10
+              px-4
+              py-3
+              text-sm
+              font-medium
+              text-primary
+            "
+          >
+            {selectedFile.name}
+          </div>
+        )}
+      </label>
 
-          <input
-            type="file"
-            accept="video/*"
-            className="hidden"
-          />
-        </label>
-      </div>
+      <input
+        id="video-upload"
+        type="file"
+        accept="video/*"
+        onChange={handleFileChange}
+        className="hidden"
+      />
     </div>
   );
 }

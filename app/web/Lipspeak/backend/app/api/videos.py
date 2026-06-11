@@ -10,7 +10,11 @@
 # Imports
 
 import os
+import time
 import tempfile
+from app.services.s3_service import (
+    S3Service,
+)
 
 from fastapi import (
     APIRouter,
@@ -41,9 +45,6 @@ from app.schemas.video import (
     VideoResponse,
 )
 
-from app.services.s3_service import (
-    S3Service,
-)
 
 from app.services.video_service import (
     VideoService,
@@ -85,6 +86,12 @@ async def upload_video(
 
     contents = await file.read()
 
+    request_start = (
+    
+        time.perf_counter()
+    
+    )
+
     with tempfile.NamedTemporaryFile(
         delete=False,
         suffix=".mp4",
@@ -100,20 +107,40 @@ async def upload_video(
 
     try:
 
+        s3_start = (
+            time.perf_counter()
+        )
+        
         video_link = (
             S3Service.upload_video(
                 temp_path,
                 file.filename,
             )
         )
+        
+        s3_end = (
+            time.perf_counter()
+        )
 
+        transcription_start = (
+            time.perf_counter()
+        )
+        
         transcript = (
             TranscriptionService
             .transcribe_video(
                 contents,
             )
         )
+        
+        transcription_end = (
+            time.perf_counter()
+        )
 
+        db_start = (
+            time.perf_counter()
+        )
+        
         video = (
             VideoService.create_video(
                 db=db,
@@ -122,6 +149,28 @@ async def upload_video(
                 video_link=video_link,
                 transcript=transcript,
             )
+        )
+        
+        db_end = (
+            time.perf_counter()
+        )
+
+        request_end = (
+            time.perf_counter()
+        )
+        
+        print(
+            "\n"
+            "========== PIPELINE TIMING ==========\n"
+            f"S3 Upload      : "
+            f"{s3_end - s3_start:.2f}s\n"
+            f"Transcription  : "
+            f"{transcription_end - transcription_start:.2f}s\n"
+            f"Database Save  : "
+            f"{db_end - db_start:.2f}s\n"
+            f"Total Request  : "
+            f"{request_end - request_start:.2f}s\n"
+            "=====================================\n"
         )
 
         return UploadResponse(
@@ -193,4 +242,11 @@ def get_video(
             detail="Video not found.",
         )
 
+    video.video_link = (
+        S3Service
+        .generate_presigned_url(
+            video.video_link,
+        )
+    )
+    
     return video

@@ -59,3 +59,29 @@ class S3Service:
             f".amazonaws.com/"
             f"{unique_name}"
         )
+
+
+    @staticmethod
+    def generate_presigned_url(
+        video_url: str,
+    ) -> str:
+        """Generate temporary video URL."""
+    
+        key = (
+            video_url.split(
+                ".amazonaws.com/",
+            )[-1]
+        )
+    
+        return (
+            s3_client.generate_presigned_url(
+                "get_object",
+                Params={
+                    "Bucket":
+                    settings.AWS_S3_BUCKET,
+                    "Key":
+                    key,
+                },
+                ExpiresIn=3600,
+            )
+        )

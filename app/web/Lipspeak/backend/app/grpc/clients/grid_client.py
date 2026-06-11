@@ -11,7 +11,7 @@ Dibyasmita Hati, Arpan Haldar
 # pyright: reportAttributeAccessIssue=false
 
 import grpc
-
+import time
 from app.grpc.protos.lipspeak.v1 import (
     inference_pb2,
     inference_pb2_grpc,
@@ -26,6 +26,10 @@ class GridClient:
         video_bytes: bytes,
     ) -> str:
 
+        grpc_start = (
+            time.perf_counter()
+        )
+        
         channel = grpc.insecure_channel(
             "localhost:50051",
         )
@@ -46,6 +50,15 @@ class GridClient:
             )
         )
 
+        grpc_end = (
+            time.perf_counter()
+        )
+        
+        print(
+            f"Backend → GRID RPC: "
+            f"{grpc_end - grpc_start:.2f}s"
+        )
+        
         return (
             response.transcript
         )

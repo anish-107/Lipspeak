@@ -7,7 +7,6 @@
  */
 
 
-// Types
 interface RealtimeServiceOptions {
   onOpen?: () => void;
 
@@ -23,12 +22,7 @@ interface RealtimeServiceOptions {
 }
 
 
-// Realtime Service
 export class RealtimeService {
-  /* ---------------------------------------------------------------------- */
-  /*                                Fields                                  */
-  /* ---------------------------------------------------------------------- */
-
   private socket:
     | WebSocket
     | null = null;
@@ -38,13 +32,15 @@ export class RealtimeService {
   private readonly maxReconnects =
     5;
 
-  /* ---------------------------------------------------------------------- */
-  /*                               Connect                                  */
-  /* ---------------------------------------------------------------------- */
+  private manuallyDisconnected =
+    false;
 
   connect(
     options?: RealtimeServiceOptions,
   ) {
+    this.manuallyDisconnected =
+      false;
+
     if (
       this.socket &&
       this.socket.readyState ===
@@ -104,15 +100,15 @@ export class RealtimeService {
     this.socket.onclose = () => {
       options?.onClose?.();
 
-      this.tryReconnect(
-        options,
-      );
+      if (
+        !this.manuallyDisconnected
+      ) {
+        this.tryReconnect(
+          options,
+        );
+      }
     };
   }
-
-  /* ---------------------------------------------------------------------- */
-  /*                             Reconnect                                  */
-  /* ---------------------------------------------------------------------- */
 
   private tryReconnect(
     options?: RealtimeServiceOptions,
@@ -133,10 +129,6 @@ export class RealtimeService {
     }, 2000);
   }
 
-  /* ---------------------------------------------------------------------- */
-  /*                             Send Data                                  */
-  /* ---------------------------------------------------------------------- */
-
   send(
     data:
       | Blob
@@ -154,19 +146,14 @@ export class RealtimeService {
     this.socket.send(data);
   }
 
-  /* ---------------------------------------------------------------------- */
-  /*                            Disconnect                                  */
-  /* ---------------------------------------------------------------------- */
-
   disconnect() {
+    this.manuallyDisconnected =
+      true;
+
     this.socket?.close();
 
     this.socket = null;
   }
-
-  /* ---------------------------------------------------------------------- */
-  /*                            Connection                                  */
-  /* ---------------------------------------------------------------------- */
 
   isConnected() {
     return (
@@ -178,6 +165,5 @@ export class RealtimeService {
 }
 
 
-// Singleton
 export const realtimeService =
   new RealtimeService();

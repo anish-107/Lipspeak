@@ -150,10 +150,7 @@ export function useRealtime() {
             transcript,
           ) => {
             setTranscript(
-              (previous) =>
-                previous +
-                " " +
-                transcript,
+              transcript,
             );
           },
         });
@@ -187,18 +184,31 @@ export function useRealtime() {
   /* ---------------------------------------------------------------------- */
   /*                           Stop Recording                               */
   /* ---------------------------------------------------------------------- */
-
+  
   const stopRecording = () => {
     stopMediaRecording();
-
+  
     realtimeService.disconnect();
-
+  
     setIsRecording(false);
-
+  
     setConnectionStatus(
       "disconnected",
     );
   };
+
+
+  /* ---------------------------------------------------------------------- */
+  /*                              Cleanup                                   */
+  /* ---------------------------------------------------------------------- */
+  
+  useEffect(() => {
+    return () => {
+      realtimeService.disconnect();
+    };
+  }, []);
+
+  
 
   /* ---------------------------------------------------------------------- */
   /*                                Return                                  */

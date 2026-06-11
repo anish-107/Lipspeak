@@ -12,7 +12,7 @@
 /* -------------------------------------------------------------------------- */
 
 export interface User {
-  id: number;
+  id: string;
   username: string;
   name: string;
   created_at?: string;
@@ -40,8 +40,8 @@ export interface SignupRequest {
 /* -------------------------------------------------------------------------- */
 
 export interface LoginResponse {
-  token: string;
-  user: User;
+  access_token: string;
+  token_type: string;
 }
 
 export interface SignupResponse {

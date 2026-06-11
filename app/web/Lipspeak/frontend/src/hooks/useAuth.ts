@@ -1,104 +1,146 @@
-// src/hooks/useAuth.ts
-
 /**
- * @authors: Anish Kumar, Bidipta Barua, Dibyasmita Hati, Arpan Haldar
+ * @authors: Anish Kumar, Bidipta Barua,
+ * Dibyasmita Hati, Arpan Haldar
  * @description: Authentication hook handling login and signup form logic.
- * @date: 10 May 2026
+ * @date: 11 June 2026
  * @returns: Authentication handlers and states.
  */
 
 "use client";
 
 import { useState } from "react";
+
 import { useRouter } from "next/navigation";
 
-interface LoginFormState {
-  email: string;
-  password: string;
-}
+import { authService }
+  from "@/services/api/auth.service";
 
-interface SignupFormState {
-  name: string;
-  email: string;
-  password: string;
-}
+import { useAuthStore }
+  from "@/store/auth.store";
+
+import {
+  LoginFormData,
+  SignupFormData,
+} from "@/types/auth.types";
+
 
 export function useAuth() {
   const router = useRouter();
 
-  const [loginLoading, setLoginLoading] = useState(false);
-  const [signupLoading, setSignupLoading] = useState(false);
+  const login = useAuthStore(
+    (state) => state.login,
+  );
 
-  const [loginForm, setLoginForm] = useState<LoginFormState>({
-    email: "",
-    password: "",
-  });
+  const [loginLoading, setLoginLoading] =
+    useState(false);
 
-  const [signupForm, setSignupForm] = useState<SignupFormState>({
-    name: "",
-    email: "",
-    password: "",
-  });
+  const [signupLoading, setSignupLoading] =
+    useState(false);
+
+  const [loginForm, setLoginForm] =
+    useState<LoginFormData>({
+      username: "",
+      password: "",
+    });
+
+  const [signupForm, setSignupForm] =
+    useState<SignupFormData>({
+      username: "",
+      name: "",
+      password: "",
+      confirmPassword: "",
+    });
 
   const handleLoginChange = (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     setLoginForm((previous) => ({
       ...previous,
-      [event.target.name]: event.target.value,
+      [event.target.name]:
+        event.target.value,
     }));
   };
 
   const handleSignupChange = (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     setSignupForm((previous) => ({
       ...previous,
-      [event.target.name]: event.target.value,
+      [event.target.name]:
+        event.target.value,
     }));
   };
 
   const handleLoginSubmit = async (
-    event: React.FormEvent<HTMLFormElement>
+    event: React.FormEvent<HTMLFormElement>,
   ) => {
     event.preventDefault();
 
     try {
       setLoginLoading(true);
 
-      /**
-       * Temporary development authentication.
-       * Replace with real backend API later.
-       */
+      const response =
+        await authService.login({
+          username:
+            loginForm.username,
+          password:
+            loginForm.password,
+        });
 
-      document.cookie = "token=demo-token; path=/";
+      const user =
+        await authService.getCurrentUser();
 
-      router.push("/dashboard");
+      login(
+        response.access_token,
+        user,
+      );
+
+      router.push(
+        "/dashboard",
+      );
+
     } catch (error) {
-      console.error(error);
+      console.error(
+        "Login failed:",
+        error,
+      );
     } finally {
       setLoginLoading(false);
     }
   };
 
   const handleSignupSubmit = async (
-    event: React.FormEvent<HTMLFormElement>
+    event: React.FormEvent<HTMLFormElement>,
   ) => {
     event.preventDefault();
 
     try {
       setSignupLoading(true);
 
-      /**
-       * Temporary development authentication.
-       * Replace with real backend API later.
-       */
+      if (
+        signupForm.password !==
+        signupForm.confirmPassword
+      ) {
+        throw new Error(
+          "Passwords do not match.",
+        );
+      }
 
-      document.cookie = "token=demo-token; path=/";
+      await authService.signup({
+        username: signupForm.username,
+        name: signupForm.name,
+        password: signupForm.password,
+      });
 
-      router.push("/dashboard");
+      router.push(
+        "/login",
+      );
+
     } catch (error) {
-      console.error(error);
+      console.error(
+        "Signup failed:",
+        error,
+      );
     } finally {
       setSignupLoading(false);
     }
@@ -106,12 +148,19 @@ export function useAuth() {
 
   return {
     loginForm,
+
     signupForm,
+
     loginLoading,
+
     signupLoading,
+
     handleLoginChange,
+
     handleSignupChange,
+
     handleLoginSubmit,
+
     handleSignupSubmit,
   };
 }

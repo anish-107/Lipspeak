@@ -77,13 +77,24 @@ export function LoginForm() {
           username,
           password,
         });
-
-      login(
-        response.token,
-        response.user,
+      
+      localStorage.setItem(
+        "access_token",
+        response.access_token,
       );
-
-      router.push("/dashboard");
+      
+      const user =
+        await authService.getCurrentUser();
+      
+      login(
+        response.access_token,
+        user,
+      );
+      
+      router.push(
+        "/dashboard",
+      );
+      
     } catch (error) {
       console.error(error);
 

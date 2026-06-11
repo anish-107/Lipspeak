@@ -1,85 +1,100 @@
 /** auth.store.ts
  * @authors: Anish Kumar, Bidipta Barua, Dibyasmita Hati, Arpan Haldar
- * @description: Global authentication state management using Zustand.
- * @date: 09 June 2026
- * @returns: Authentication store.
+ * @description: Zustand authentication state store.
+ * @date: 11 June 2026
+ * @returns: Authentication state management.
  *
  */
 
-
-// Imports
 import { create } from "zustand";
-import { AuthState, User } from "@/types/auth.types";
+
+import {
+  User,
+} from "@/types/auth.types";
 
 
-// Store Types
-interface AuthStore extends AuthState {
-  setToken: (token: string | null) => void;
+interface AuthStore {
+  token: string | null;
 
-  setUser: (user: User | null) => void;
+  user: User | null;
 
-  login: (token: string, user: User) => void;
+  isLoading: boolean;
+
+  login: (
+    token: string,
+    user: User,
+  ) => void;
 
   logout: () => void;
+
+  setUser: (
+    user: User | null,
+  ) => void;
+
+  setToken: (
+    token: string | null,
+  ) => void;
+
+  setIsLoading: (
+    isLoading: boolean,
+  ) => void;
 }
 
 
-// Auth Store
-export const useAuthStore = create<AuthStore>((set) => ({
-  user: null,
-
-  token: null,
-
-  isAuthenticated: false,
-
-
-  /* ------------------------------------------------------------------------ */
-  /*                                Set Token                                 */
-  /* ------------------------------------------------------------------------ */
-
-  setToken: (token) =>
-    set({
-      token,
-      isAuthenticated: !!token,
-    }),
-
-
-  /* ------------------------------------------------------------------------ */
-  /*                                 Set User                                 */
-  /* ------------------------------------------------------------------------ */
-
-  setUser: (user) =>
-    set({
-      user,
-    }),
-
-
-  /* ------------------------------------------------------------------------ */
-  /*                                   Login                                  */
-  /* ------------------------------------------------------------------------ */
-
-  login: (token, user) => {
-    localStorage.setItem("access_token", token);
-
-    set({
-      token,
-      user,
-      isAuthenticated: true,
-    });
-  },
-
-
-  /* ------------------------------------------------------------------------ */
-  /*                                  Logout                                  */
-  /* ------------------------------------------------------------------------ */
-
-  logout: () => {
-    localStorage.removeItem("access_token");
-
-    set({
+export const useAuthStore =
+  create<AuthStore>(
+    (set) => ({
       token: null,
+
       user: null,
-      isAuthenticated: false,
-    });
-  },
-}));
+
+      isLoading: true,
+
+      login: (
+        token,
+        user,
+      ) => {
+        localStorage.setItem(
+          "access_token",
+          token,
+        );
+
+        set({
+          token,
+          user,
+        });
+      },
+
+      logout: () => {
+        localStorage.removeItem(
+          "access_token",
+        );
+
+        set({
+          token: null,
+          user: null,
+        });
+      },
+
+      setUser: (
+        user,
+      ) =>
+        set({
+          user,
+        }),
+
+      setToken: (
+        token,
+      ) =>
+        set({
+          token,
+        }),
+
+      setIsLoading: (
+        isLoading,
+      ) =>
+        set({
+          isLoading,
+        }),
+    }),
+  );

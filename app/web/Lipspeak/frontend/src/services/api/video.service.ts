@@ -35,7 +35,7 @@ export const videoService = {
   /* ------------------------------------------------------------------------ */
 
   async getVideoById(
-    videoId: number,
+    videoId: string,
   ): Promise<Video> {
     const response = await apiClient.get<Video>(
       `/videos/${videoId}`,
@@ -54,7 +54,10 @@ export const videoService = {
   ): Promise<UploadVideoResponse> {
     const formData = new FormData();
 
-    formData.append("video", file);
+    formData.append(
+      "file",
+      file,
+    );
 
     const response =
       await apiClient.post<UploadVideoResponse>(

@@ -12,7 +12,7 @@
 /* -------------------------------------------------------------------------- */
 
 export interface Video {
-  id: number;
+  id: string;
   username: string;
   video_link: string;
   transcript: string;
@@ -34,9 +34,8 @@ export interface UploadVideoRequest {
 /* -------------------------------------------------------------------------- */
 
 export interface UploadVideoResponse {
-  id: number;
+  video_id: string;
   transcript: string;
-  video_link: string;
 }
 
 

@@ -1,7 +1,7 @@
 /** useDashboard.ts
  * @authors: Anish Kumar, Bidipta Barua, Dibyasmita Hati, Arpan Haldar
  * @description: Dashboard data management hook.
- * @date: 10 June 2026
+ * @date: 11 June 2026
  * @returns: Dashboard state and actions.
  *
  */
@@ -12,9 +12,14 @@
 
 
 // Imports
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState,
+} from "react";
 
-// import { videoService } from "@/services/api/video.service";
+import {
+  dashboardService,
+} from "@/services/api/dashboard.service";
 
 import type {
   Video,
@@ -27,103 +32,135 @@ export function useDashboard() {
   /*                                State                                   */
   /* ---------------------------------------------------------------------- */
 
-  const [videos, setVideos] =
-    useState<Video[]>([]);
+  const [
+    videos,
+    setVideos,
+  ] = useState<
+    Video[]
+  >([]);
 
-  const [loading, setLoading] =
-    useState(true);
+  const [
+    totalVideos,
+    setTotalVideos,
+  ] = useState(
+    0,
+  );
 
-  const [error, setError] =
-    useState("");
+  const [
+    latestTranscript,
+    setLatestTranscript,
+  ] = useState(
+    "No transcripts available",
+  );
 
+  const [
+    loading,
+    setLoading,
+  ] = useState(
+    true,
+  );
+
+  const [
+    error,
+    setError,
+  ] = useState(
+    "",
+  );
 
   /* ---------------------------------------------------------------------- */
-  /*                             Load Videos                                */
+  /*                             Load Dashboard                             */
   /* ---------------------------------------------------------------------- */
 
-  
-  const fetchVideos = async () => {
-    try {
-      setLoading(true);
+  const fetchDashboard =
+    async () => {
+      try {
+        setLoading(
+          true,
+        );
 
-      // const data =
-      //   await videoService.getVideos();
+        const data =
+          await dashboardService.getOverview();
 
-      const data = [
-        {
-          id: 1,
-          username: "anish",
-          video_link: "",
-          transcript:
-            "Welcome to LipSpeak AI",
-          created_at:
-            new Date().toISOString(),
-        },
-        {
-          id: 2,
-          username: "anish",
-          video_link: "",
-          transcript:
-            "Real-time recognition test",
-          created_at:
-            new Date().toISOString(),
-        },
-      ];
-      
-      setVideos(data);
+        setVideos(
+          data.recent_videos,
+        );
 
-      setError("");
-    } catch (error) {
-      console.error(error);
+        setTotalVideos(
+          data.total_videos,
+        );
 
-      setError(
-        "Failed to load videos.",
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+        setLatestTranscript(
+          data.latest_transcript,
+        );
+
+        setError(
+          "",
+        );
+
+      } catch (error) {
+        console.error(
+          error,
+        );
+
+        setError(
+          "Failed to load dashboard.",
+        );
+
+      } finally {
+        setLoading(
+          false,
+        );
+      }
+    };
 
   /* ---------------------------------------------------------------------- */
   /*                               Effects                                  */
   /* ---------------------------------------------------------------------- */
 
   useEffect(() => {
-    const loadVideos = async () => {
-      await fetchVideos();
-    };
+    dashboardService
+      .getOverview()
+      .then((data) => {
+        setVideos(
+          data.recent_videos,
+        );
   
-    void loadVideos();
+        setTotalVideos(
+          data.total_videos,
+        );
+  
+        setLatestTranscript(
+          data.latest_transcript,
+        );
+      })
+      .catch(() => {
+        setError(
+          "Failed to load dashboard.",
+        );
+      })
+      .finally(() => {
+        setLoading(
+          false,
+        );
+      });
   }, []);
-
-  /* ---------------------------------------------------------------------- */
-  /*                              Statistics                                */
-  /* ---------------------------------------------------------------------- */
-
-  const totalVideos =
-    videos.length;
-
-  const latestTranscript =
-    videos[0]?.transcript ??
-    "No transcripts available";
 
   /* ---------------------------------------------------------------------- */
   /*                               Return                                   */
   /* ---------------------------------------------------------------------- */
 
   return {
-
     videos,
-
-    loading,
-
-    error,
 
     totalVideos,
 
     latestTranscript,
 
+    loading,
+
+    error,
+
     refreshVideos:
-      fetchVideos,
+      fetchDashboard,
   };
 }

@@ -1,18 +1,22 @@
 /** page.tsx
  * @authors: Anish Kumar, Bidipta Barua, Dibyasmita Hati, Arpan Haldar
  * @description: Video details page displaying transcript and metadata.
- * @date: 10 June 2026
+ * @date: 11 June 2026
  * @returns: Video details page component.
  *
  */
 
 
-// Client Component
 "use client";
 
 
-// Imports
-import { useState } from "react";
+import {
+  useState,
+} from "react";
+
+import {
+  useParams,
+} from "next/navigation";
 
 import {
   Calendar,
@@ -21,55 +25,95 @@ import {
   FileVideo,
 } from "lucide-react";
 
-import { Button } from "@/components/ui/shadcn/button";
+import {
+  Button,
+} from "@/components/ui/shadcn/button";
+
+import {
+  useVideo,
+} from "@/hooks/useVideo";
 
 
-// Video Details Page
 export default function VideoDetailsPage() {
   /* ---------------------------------------------------------------------- */
-  /*                            Mock Data                                   */
+  /*                                Params                                  */
   /* ---------------------------------------------------------------------- */
 
-  // TODO:
-  // Replace with videoService.getVideoById(id)
+  const params =
+    useParams();
 
-  const video = {
-    id: 1,
-
-    username: "anish",
-
-    video_link:
-      "https://www.w3schools.com/html/mov_bbb.mp4",
-
-    transcript:
-      "Welcome to LipSpeak AI. This transcript was generated from a pre-recorded video and is currently mock data until the backend integration is completed.",
-
-    created_at:
-      new Date().toISOString(),
-  };
+  const id =
+    params.id as string;
 
   /* ---------------------------------------------------------------------- */
-  /*                               State                                    */
+  /*                                 Hook                                   */
   /* ---------------------------------------------------------------------- */
 
-  const [copied, setCopied] =
-    useState(false);
+  const {
+    video,
+    loading,
+  } = useVideo(
+    id,
+  );
 
   /* ---------------------------------------------------------------------- */
-  /*                              Handlers                                  */
+  /*                                State                                   */
   /* ---------------------------------------------------------------------- */
 
-  const handleCopy = async () => {
-    await navigator.clipboard.writeText(
-      video.transcript,
+  const [
+    copied,
+    setCopied,
+  ] = useState(
+    false,
+  );
+
+  /* ---------------------------------------------------------------------- */
+  /*                              Loading                                   */
+  /* ---------------------------------------------------------------------- */
+
+  if (
+    loading
+  ) {
+    return (
+      <p>
+        Loading...
+      </p>
     );
+  }
 
-    setCopied(true);
+  if (
+    !video
+  ) {
+    return (
+      <p>
+        Video not found.
+      </p>
+    );
+  }
 
-    setTimeout(() => {
-      setCopied(false);
-    }, 2000);
-  };
+  /* ---------------------------------------------------------------------- */
+  /*                               Handlers                                 */
+  /* ---------------------------------------------------------------------- */
+
+  const handleCopy =
+    async () => {
+      await navigator.clipboard.writeText(
+        video.transcript,
+      );
+
+      setCopied(
+        true,
+      );
+
+      setTimeout(
+        () => {
+          setCopied(
+            false,
+          );
+        },
+        2000,
+      );
+    };
 
   /* ---------------------------------------------------------------------- */
   /*                                Render                                  */
@@ -77,7 +121,6 @@ export default function VideoDetailsPage() {
 
   return (
     <section className="space-y-8">
-      {/* Header */}
       <div>
         <h1
           className="
@@ -100,7 +143,6 @@ export default function VideoDetailsPage() {
         </p>
       </div>
 
-      {/* Metadata */}
       <div
         className="
           glass-card
@@ -139,15 +181,6 @@ export default function VideoDetailsPage() {
                 Video #{video.id}
               </span>
             </div>
-
-            <p
-              className="
-                mt-2
-                text-muted-foreground
-              "
-            >
-              Uploaded by @{video.username}
-            </p>
           </div>
 
           <div
@@ -168,7 +201,6 @@ export default function VideoDetailsPage() {
         </div>
       </div>
 
-      {/* Video Preview */}
       <div
         className="
           glass-card
@@ -200,14 +232,10 @@ export default function VideoDetailsPage() {
               src={video.video_link}
               type="video/mp4"
             />
-
-            Your browser does not
-            support video playback.
           </video>
         </div>
       </div>
 
-      {/* Transcript */}
       <div
         className="
           glass-card
@@ -219,37 +247,24 @@ export default function VideoDetailsPage() {
         <div
           className="
             flex
-            flex-col
-            gap-4
-            sm:flex-row
-            sm:items-center
-            sm:justify-between
+            items-center
+            justify-between
           "
         >
-          <div>
-            <h2
-              className="
-                text-2xl
-                font-bold
-              "
-            >
-              Transcript
-            </h2>
-
-            <p
-              className="
-                mt-2
-                text-sm
-                text-muted-foreground
-              "
-            >
-              AI-generated transcript.
-            </p>
-          </div>
+          <h2
+            className="
+              text-2xl
+              font-bold
+            "
+          >
+            Transcript
+          </h2>
 
           <Button
             variant="outline"
-            onClick={handleCopy}
+            onClick={
+              handleCopy
+            }
           >
             {copied ? (
               <>
@@ -260,7 +275,6 @@ export default function VideoDetailsPage() {
                     w-4
                   "
                 />
-
                 Copied
               </>
             ) : (
@@ -272,7 +286,6 @@ export default function VideoDetailsPage() {
                     w-4
                   "
                 />
-
                 Copy
               </>
             )}

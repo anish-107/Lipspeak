@@ -11,8 +11,7 @@
 import Link from "next/link";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/shadcn/button";
-import { BackgroundBeams } from "@/components/ui/aceternity/background-beams";
-import { LampContainer } from "../ui/aceternity/lamp";
+
 
 
 // CTASection Component
@@ -24,8 +23,6 @@ export function CTASection() {
   return (
     <section className="relative overflow-hidden">
       <section className="relative py-32">
-        <BackgroundBeams />
-        <LampContainer>
           <div
             className="
             relative
@@ -197,7 +194,6 @@ export function CTASection() {
               No credit card required • Free trial available • Setup in minutes
             </p>
           </div>
-        </LampContainer>
       </section>
     </section>
   );

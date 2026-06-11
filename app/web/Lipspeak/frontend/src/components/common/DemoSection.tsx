@@ -1,315 +1,482 @@
-/** DemoSection.tsx
- * @authors: Anish Kumar, Bidipta Barua, Dibyasmita Hati, Arpan Haldar
- * @description: Interactive demo section for testing AI lip reading models.
- * @date: 04 June 2026
+/**
+ * DemoSection.tsx
+ * @authors: Anish Kumar, Bidipta Barua,
+ * Dibyasmita Hati, Arpan Haldar
+ * @description: Interactive homepage demo.
+ * @date: 11 June 2026
  * @returns: Demo section component.
- * 
+ *
  */
 
- 
-// Client Component
+
 "use client";
 
 
 // Imports
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import { Upload, FileVideo, Brain, Sparkles, CheckCircle2 } from "lucide-react";
-import { Button } from "@/components/ui/shadcn/button";
-import { BackgroundBeams } from "@/components/ui/aceternity/background-beams";
+import {
+  useState,
+} from "react";
+
+import {
+  Upload,
+  Loader2,
+  FileVideo,
+  Cpu,
+  Zap,
+  Network,
+} from "lucide-react";
+
+import {
+  Button,
+} from "@/components/ui/shadcn/button";
+
+import {
+  demoService,
+} from "@/services/api/demo.service";
 
 
-// DemoSection Component
+// Demo Section
 export function DemoSection() {
-  // Logic
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [model, setModel] = useState("lipnet");
-  const [transcript] = useState("Hello everyone and welcome to LipSpeak AI.");
-  const [confidence] = useState("87.4%");
+  const [
+    file,
+    setFile,
+  ] = useState<
+    File | null
+  >(null);
 
-  // Generate a preview URL when a file is selected (safely avoids cascading renders)
-  useEffect(() => {
-    if (!selectedFile) return;
+  const [
+    transcript,
+    setTranscript,
+  ] = useState("");
 
-    const objectUrl = URL.createObjectURL(selectedFile);
-    setPreviewUrl(objectUrl);
+  const [
+    isLoading,
+    setIsLoading,
+  ] = useState(false);
 
-    // Cleanup function
-    return () => URL.revokeObjectURL(objectUrl);
-  }, [selectedFile]);
+  const handleUpload =
+    async () => {
+      if (!file) {
+        return;
+      }
 
-  // Render
+      try {
+        setIsLoading(
+          true,
+        );
+
+        setTranscript(
+          "",
+        );
+
+        const response =
+          await demoService.transcribe(
+            file,
+          );
+
+        setTranscript(
+          response.transcript,
+        );
+
+      } catch (
+        error
+      ) {
+        console.error(
+          error,
+        );
+      } finally {
+        setIsLoading(
+          false,
+        );
+      }
+    };
+
   return (
-    <section className="relative overflow-hidden py-28">
-      <BackgroundBeams />
-
-      <div className="relative z-10 mx-auto max-w-7xl px-6">
+    <section
+      className="
+        px-6
+        py-24
+      "
+    >
+      <div
+        className="
+          mx-auto
+          max-w-6xl
+        "
+      >
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mx-auto mb-20 max-w-3xl text-center"
+        <div
+          className="
+            mb-12
+            text-center
+          "
         >
-          <div
-            className="
-              inline-flex
-              items-center
-              gap-2
-              rounded-full
-              border
-              border-primary/20
-              bg-primary/10
-              px-4
-              py-2
-              text-sm
-              font-medium
-              text-primary
-            "
-          >
-            <Sparkles className="h-4 w-4" />
-            Interactive Product Demo
-          </div>
-
           <h2
             className="
-              mt-6
               text-4xl
               font-black
-              tracking-tight
-              md:text-6xl
             "
           >
-            Try
-            <span className="gradient-text block">LipSpeak AI</span>
+            Try LipSpeak AI
           </h2>
 
           <p
             className="
-              mt-6
-              text-lg
-              leading-8
+              mt-4
               text-muted-foreground
             "
           >
-            Upload a video, choose a model, and experience real-time visual
-            speech recognition.
+            Upload a video and
+            generate a transcript
+            using our live GRID
+            inference pipeline.
           </p>
-        </motion.div>
+        </div>
 
-        {/* Demo Grid */}
-        <div className="grid gap-8 lg:grid-cols-2">
-          {/* Upload Card */}
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
+        {/* Main Card */}
+        <div
+          className="
+            rounded-3xl
+            border
+            border-border
+            bg-card
+            p-8
+          "
+        >
+          {/* Upload Area */}
+          <div
             className="
-              glass-card
-              ai-border
               rounded-3xl
-              p-8
+              border
+              border-dashed
+              border-primary/30
+              bg-primary/5
+              p-10
             "
           >
-            <h3 className="text-2xl font-bold">Upload Video</h3>
-
-            <p className="mt-2 text-muted-foreground">
-              Supported formats: MP4, AVI, MOV, MKV
-            </p>
-
-            {!selectedFile ? (
-              <label
-                className="
-                  mt-8
-                  flex
-                  aspect-video
-                  cursor-pointer
-                  flex-col
-                  items-center
-                  justify-center
-                  rounded-3xl
-                  border-2
-                  border-dashed
-                  border-primary/20
-                  bg-primary/5
-                  transition-all
-                  hover:border-primary/40
-                "
-              >
-                <Upload className="h-12 w-12 text-primary" />
-
-                <p className="mt-4 font-medium">Drag & Drop Video</p>
-
-                <p className="text-sm text-muted-foreground">
-                  or click to browse
-                </p>
-
-                <input
-                  type="file"
-                  accept="video/*"
-                  className="hidden"
-                  onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
-                />
-              </label>
-            ) : (
-              <div className="mt-8 flex flex-col gap-4">
-                <div className="relative aspect-video w-full overflow-hidden rounded-3xl border border-border bg-black/5 dark:bg-black/40">
-                  <video
-                    src={previewUrl || ""}
-                    controls
-                    className="h-full w-full object-contain"
-                  />
-                </div>
-
-                <div className="flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-2 truncate text-sm text-muted-foreground">
-                    <FileVideo className="h-4 w-4 shrink-0 text-primary" />
-                    <span className="truncate">{selectedFile.name}</span>
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setSelectedFile(null)}
-                    className="shrink-0"
-                  >
-                    Remove Video
-                  </Button>
-                </div>
-              </div>
-            )}
-          </motion.div>
-
-          {/* Results Card */}
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="
-              glass-card
-              ai-border
-              rounded-3xl
-              p-8
-            "
-          >
-            <h3 className="text-2xl font-bold">Analysis Settings</h3>
-
-            <div className="mt-8">
-              <label className="text-sm font-medium">Select Model</label>
-
-              <select
-                value={model}
-                onChange={(e) => setModel(e.target.value)}
-                className="
-                  mt-2
-                  w-full
-                  rounded-xl
-                  border
-                  border-border
-                  bg-white
-                  px-4
-                  py-3
-                  text-zinc-900
-                  focus:border-primary
-                  focus:outline-none
-                  focus:ring-1
-                  focus:ring-primary
-                  dark:bg-zinc-950
-                  dark:text-zinc-100
-                "
-              >
-                <option
-                  value="lipnet"
-                  className="bg-white text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100"
-                >
-                  LipNet (Fast)
-                </option>
-
-                <option
-                  value="transformer"
-                  className="bg-white text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100"
-                >
-                  Transformer (Balanced)
-                </option>
-
-                <option
-                  value="production"
-                  className="bg-white text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100"
-                >
-                  Production Model (Best Accuracy)
-                </option>
-              </select>
-            </div>
-
-            <Button
-              disabled={!selectedFile}
+            <div
               className="
-                mt-6
-                w-full
-                rounded-xl
-                bg-linear-to-r
-                from-indigo-600
-                via-purple-600
-                to-cyan-600
-                disabled:opacity-50
+                flex
+                flex-col
+                items-center
+                gap-6
+                text-center
               "
             >
-              <Brain className="mr-2 h-4 w-4" />
-              Analyze Video
-            </Button>
+              <div
+                className="
+                  flex
+                  h-20
+                  w-20
+                  items-center
+                  justify-center
+                  rounded-full
+                  bg-primary/10
+                "
+              >
+                <FileVideo
+                  className="
+                    h-10
+                    w-10
+                    text-primary
+                  "
+                />
+              </div>
+          
+              <div>
+                <h3
+                  className="
+                    text-2xl
+                    font-bold
+                  "
+                >
+                  Upload a Video
+                </h3>
+          
+                <p
+                  className="
+                    mt-2
+                    text-muted-foreground
+                  "
+                >
+                  Supported formats:
+                  MP4, MPG, MPEG
+                </p>
+              </div>
+          
+              <label
+                className="
+                  cursor-pointer
+                "
+              >
+                <input
+                  type="file"
+                  accept="
+                    .mp4,
+                    .mpeg,
+                    .mpg
+                  "
+                  className="hidden"
+                  onChange={(event) =>
+                    setFile(
+                      event.target.files?.[0] ??
+                        null
+                    )
+                  }
+                />
+          
+                <div
+                  className="
+                    rounded-xl
+                    border
+                    px-6
+                    py-3
+                    transition
+                    hover:bg-accent
+                  "
+                >
+                  Choose Video
+                </div>
+              </label>
+          
+              {file && (
+                <div
+                  className="
+                    rounded-xl
+                    border
+                    bg-background
+                    px-4
+                    py-3
+                    text-sm
+                  "
+                >
+                  📹 {file.name}
+                </div>
+              )}
+          
+              <Button
+                onClick={handleUpload}
+                disabled={
+                  !file ||
+                  isLoading
+                }
+                size="lg"
+                className="
+                  h-12
+                  min-w-[240px]
+                  rounded-xl
+                  bg-linear-to-r
+                  from-indigo-600
+                  via-violet-600
+                  to-cyan-600
+                  font-semibold
+                  text-white
+                  transition-all
+                  hover:scale-[1.02]
+                "
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2
+                      className="
+                        mr-2
+                        h-5
+                        w-5
+                        animate-spin
+                      "
+                    />
+                    Running GRID...
+                  </>
+                ) : (
+                  <>
+                    <Cpu
+                      className="
+                        mr-2
+                        h-5
+                        w-5
+                      "
+                    />
+                    Generate Transcript
+                  </>
+                )}
+              </Button>
+          
+              <p
+                className="
+                  text-xs
+                  text-muted-foreground
+                "
+              >
+                Powered by GRID • TensorFlow • gRPC
+              </p>
+            </div>
+          </div>
 
-            {/* Output */}
+          {/* Feature Cards */}
+          <div
+            className="
+              mt-6
+              grid
+              gap-4
+              md:grid-cols-3
+            "
+          >
+            <div
+              className="
+                rounded-2xl
+                border
+                p-4
+              "
+            >
+              <Cpu
+                className="
+                  mb-2
+                  h-5
+                  w-5
+                "
+              />
+
+              <h4
+                className="
+                  font-semibold
+                "
+              >
+                GRID Model
+              </h4>
+
+              <p
+                className="
+                  text-sm
+                  text-muted-foreground
+                "
+              >
+                TensorFlow
+                inference
+              </p>
+            </div>
+
+            <div
+              className="
+                rounded-2xl
+                border
+                p-4
+              "
+            >
+              <Network
+                className="
+                  mb-2
+                  h-5
+                  w-5
+                "
+              />
+
+              <h4
+                className="
+                  font-semibold
+                "
+              >
+                gRPC Pipeline
+              </h4>
+
+              <p
+                className="
+                  text-sm
+                  text-muted-foreground
+                "
+              >
+                Dedicated
+                inference server
+              </p>
+            </div>
+
+            <div
+              className="
+                rounded-2xl
+                border
+                p-4
+              "
+            >
+              <Zap
+                className="
+                  mb-2
+                  h-5
+                  w-5
+                "
+              />
+
+              <h4
+                className="
+                  font-semibold
+                "
+              >
+                ~7 Seconds
+              </h4>
+
+              <p
+                className="
+                  text-sm
+                  text-muted-foreground
+                "
+              >
+                Current CPU
+                inference time
+              </p>
+            </div>
+          </div>
+
+          {/* Transcript */}
+          {transcript && (
             <div
               className="
                 mt-8
                 rounded-3xl
                 border
-                border-border
-                bg-card
+                border-green-500/20
+                bg-green-500/5
                 p-6
               "
             >
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="h-5 w-5 text-green-500" />
-
-                <span className="font-medium">Prediction Complete</span>
-              </div>
-
-              <div className="mt-6">
-                <p className="text-sm text-muted-foreground">Transcript</p>
-
-                <p className="mt-2 leading-7">{transcript}</p>
-              </div>
-
-              <div className="mt-6 grid grid-cols-2 gap-4">
-                <div
+              <div
+                className="
+                  flex
+                  items-center
+                  justify-between
+                "
+              >
+                <h3
                   className="
-                    rounded-xl
-                    border
-                    border-border
-                    p-4
+                    text-lg
+                    font-bold
                   "
                 >
-                  <p className="text-sm text-muted-foreground">Confidence</p>
-
-                  <h4 className="mt-2 text-xl font-bold">{confidence}</h4>
-                </div>
-
-                <div
+                  Generated Transcript
+                </h3>
+            
+                <span
                   className="
-                    rounded-xl
-                    border
-                    border-border
-                    p-4
+                    rounded-full
+                    bg-green-500/10
+                    px-3
+                    py-1
+                    text-xs
+                    text-green-500
                   "
                 >
-                  <p className="text-sm text-muted-foreground">Model</p>
-
-                  <h4 className="mt-2 text-xl font-bold capitalize">{model}</h4>
-                </div>
+                  Success
+                </span>
               </div>
+            
+              <p
+                className="
+                  mt-4
+                  leading-8
+                  text-lg
+                "
+              >
+                {transcript}
+              </p>
             </div>
-          </motion.div>
+          )}
         </div>
       </div>
     </section>

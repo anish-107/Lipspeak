@@ -21,8 +21,7 @@ import {
   Video,
   MessageSquareText,
 } from "lucide-react";
-import { LampContainer } from "@/components/ui/aceternity/lamp";
-import { BackgroundBeams } from "@/components/ui/aceternity/background-beams";
+
 
 
 // FeaturesSection Component
@@ -32,8 +31,6 @@ export function FeaturesSection() {
   
   // Render
   return (
-    <LampContainer>
-      <BackgroundBeams />{" "}
       <section className="relative z-50 w-full px-6 py-28">
         {" "}
         <div className="mx-auto max-w-7xl">
@@ -396,6 +393,5 @@ export function FeaturesSection() {
           </div>
         </div>
       </section>
-    </LampContainer>
   );
 }

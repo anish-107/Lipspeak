@@ -16,8 +16,6 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight, CheckCircle2, PlayCircle, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/shadcn/button";
-import { BackgroundBeams } from "@/components/ui/aceternity/background-beams";
-import { LampContainer } from "../ui/aceternity/lamp";
 
 
 // HeroSection Component
@@ -40,8 +38,6 @@ export function HeroSection() {
     >
       {/* Background */}
 
-      <BackgroundBeams />
-
       <div className="relative z-10 mx-auto max-w-7xl">
         <div
           className="
@@ -53,7 +49,6 @@ export function HeroSection() {
           "
         >
           {/* Left Content */}
-          <LampContainer>
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -202,13 +197,20 @@ export function HeroSection() {
                 </div>
               </div>
             </motion.div>
-          </LampContainer>
 
           {/* Right Content */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8 }}
+            initial={{
+              opacity: 0,
+              x: 40,
+            }}
+            animate={{
+              opacity: 1,
+              x: 0,
+            }}
+            transition={{
+              duration: 0.8,
+            }}
             className="relative"
           >
             {/* Glow */}
@@ -224,8 +226,8 @@ export function HeroSection() {
                 blur-3xl
               "
             />
-
-            {/* Product Card */}
+          
+            {/* Main Card */}
             <div
               className="
                 relative
@@ -234,68 +236,152 @@ export function HeroSection() {
                 border
                 border-border
                 bg-background/70
-                p-4
+                p-8
                 backdrop-blur-2xl
                 shadow-2xl
               "
             >
-              {/* Demo Video */}
-              <div className="relative overflow-hidden rounded-3xl">
-                <video
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  className="
-                    aspect-video
-                    w-full
-                    object-cover
-                  "
-                >
-                  <source src="/videos/lipspeak-demo.mp4" type="video/mp4" />
-                </video>
-
-                {/* Overlay */}
+              <div
+                className="
+                  flex
+                  flex-col
+                  gap-6
+                "
+              >
+                {/* Step 1 */}
                 <div
                   className="
-                    absolute
-                    inset-0
-                    bg-linear-to-t
-                    from-black/70
-                    via-black/10
-                    to-transparent
-                  "
-                />
-
-                {/* Prediction Box */}
-                <div
-                  className="
-                    absolute
-                    bottom-4
-                    left-4
                     rounded-2xl
                     border
-                    border-white/10
-                    bg-black/50
-                    px-4
-                    py-3
-                    backdrop-blur-xl
+                    border-border
+                    bg-card
+                    p-5
                   "
                 >
-                  <p className="text-xs text-zinc-400">Predicted Speech</p>
-
-                  <p className="mt-1 font-medium text-white">Hello everyone</p>
-
-                  <p className="mt-1 text-xs text-green-400">
+                  <p
+                    className="
+                      text-xs
+                      uppercase
+                      tracking-wider
+                      text-muted-foreground
+                    "
+                  >
+                    Input Video
+                  </p>
+          
+                  <h3
+                    className="
+                      mt-2
+                      text-lg
+                      font-bold
+                    "
+                  >
+                    Silent Visual Speech
+                  </h3>
+                </div>
+          
+                {/* Arrow */}
+                <div
+                  className="
+                    flex
+                    justify-center
+                    text-cyan-500
+                    text-2xl
+                  "
+                >
+                  ↓
+                </div>
+          
+                {/* Step 2 */}
+                <div
+                  className="
+                    rounded-2xl
+                    border
+                    border-cyan-500/20
+                    bg-cyan-500/5
+                    p-5
+                  "
+                >
+                  <p
+                    className="
+                      text-xs
+                      uppercase
+                      tracking-wider
+                      text-muted-foreground
+                    "
+                  >
+                    AI Model
+                  </p>
+          
+                  <h3
+                    className="
+                      mt-2
+                      text-lg
+                      font-bold
+                    "
+                  >
+                    GRID + TensorFlow
+                  </h3>
+                </div>
+          
+                {/* Arrow */}
+                <div
+                  className="
+                    flex
+                    justify-center
+                    text-cyan-500
+                    text-2xl
+                  "
+                >
+                  ↓
+                </div>
+          
+                {/* Output */}
+                <div
+                  className="
+                    rounded-2xl
+                    border
+                    border-green-500/20
+                    bg-green-500/5
+                    p-6
+                  "
+                >
+                  <p
+                    className="
+                      text-xs
+                      uppercase
+                      tracking-wider
+                      text-muted-foreground
+                    "
+                  >
+                    Generated Transcript
+                  </p>
+          
+                  <h2
+                    className="
+                      mt-3
+                      text-3xl
+                      font-black
+                    "
+                  >
+                    Hello Everyone
+                  </h2>
+          
+                  <p
+                    className="
+                      mt-3
+                      text-green-500
+                    "
+                  >
                     Confidence • 87%
                   </p>
                 </div>
               </div>
-
+          
               {/* Stats */}
               <div
                 className="
-                  mt-4
+                  mt-6
                   grid
                   grid-cols-3
                   gap-3
@@ -310,11 +396,26 @@ export function HeroSection() {
                     p-4
                   "
                 >
-                  <p className="text-xs text-muted-foreground">Accuracy</p>
-
-                  <h4 className="mt-2 text-xl font-black">87%</h4>
+                  <p
+                    className="
+                      text-xs
+                      text-muted-foreground
+                    "
+                  >
+                    Accuracy
+                  </p>
+          
+                  <h4
+                    className="
+                      mt-2
+                      text-xl
+                      font-black
+                    "
+                  >
+                    87%
+                  </h4>
                 </div>
-
+          
                 <div
                   className="
                     rounded-2xl
@@ -324,11 +425,26 @@ export function HeroSection() {
                     p-4
                   "
                 >
-                  <p className="text-xs text-muted-foreground">Latency</p>
-
-                  <h4 className="mt-2 text-xl font-black">1500ms</h4>
+                  <p
+                    className="
+                      text-xs
+                      text-muted-foreground
+                    "
+                  >
+                    Latency
+                  </p>
+          
+                  <h4
+                    className="
+                      mt-2
+                      text-xl
+                      font-black
+                    "
+                  >
+                    ~7s
+                  </h4>
                 </div>
-
+          
                 <div
                   className="
                     rounded-2xl
@@ -338,9 +454,24 @@ export function HeroSection() {
                     p-4
                   "
                 >
-                  <p className="text-xs text-muted-foreground">Models</p>
-
-                  <h4 className="mt-2 text-xl font-black">AI</h4>
+                  <p
+                    className="
+                      text-xs
+                      text-muted-foreground
+                    "
+                  >
+                    Model
+                  </p>
+          
+                  <h4
+                    className="
+                      mt-2
+                      text-xl
+                      font-black
+                    "
+                  >
+                    GRID
+                  </h4>
                 </div>
               </div>
             </div>

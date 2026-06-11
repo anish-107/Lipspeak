@@ -35,6 +35,10 @@ from app.websocket.realtime import (
     router as realtime_router,
 )
 
+from app.api.demo import (
+    router as demo_router
+)
+
 from fastapi.middleware.cors import (
     CORSMiddleware,
 )
@@ -55,6 +59,10 @@ app.include_router(
 
 app.include_router(
     videos_router,
+)
+
+app.include_router (
+    demo_router,
 )
 
 app.include_router(

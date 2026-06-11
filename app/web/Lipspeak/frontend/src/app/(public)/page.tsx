@@ -43,17 +43,11 @@ export default function HomePage() {
 
         <HeroSection />
         
-        <div className="-mt-6 md:-mt-8">
-          <FeaturesSection />
-        </div>
+        <FeaturesSection />
         
-        <div className="-mt-6 md:-mt-8">
-          <DemoSection />
-        </div>
+        <DemoSection />
         
-        <div className="-mt-6 md:-mt-8">
-          <CTASection />
-        </div>
+        <CTASection />
         
       </div>
 

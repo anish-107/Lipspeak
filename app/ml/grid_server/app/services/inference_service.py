@@ -10,6 +10,7 @@ GRID lip reading inference.
 
 # Imports
 import keras
+import time
 import tensorflow as tf
 
 from typing import cast
@@ -77,45 +78,110 @@ class InferenceService:
 
         '''
 
+        pipeline_start = (
+            time.perf_counter()
+        )
+
         # Load Video Tensor
+        load_start = (
+            time.perf_counter()
+        )
+        
         video_tensor: tf.Tensor = (
             load_video(
                 video_path
             )
         )
+        
+        load_end = (
+            time.perf_counter()
+        )
 
 
         # Add Batch Dimension
+        expand_start = (
+            time.perf_counter()
+        )
+        
         video_tensor = tf.expand_dims(
             video_tensor,
             axis=0
         )
+        
+        expand_end = (
+            time.perf_counter()
+        )
 
 
         # Predict Output
+        predict_start = (
+            time.perf_counter()
+        )
+        
         yhat: tf.Tensor = cast(
             tf.Tensor,
             self.model.predict(
                 video_tensor
             )
         )
+        
+        predict_end = (
+            time.perf_counter()
+        )
 
 
         # Decode Prediction
+        decode_start = (
+            time.perf_counter()
+        )
+        
         prediction: str = (
             decode_prediction(
                 yhat
             )
         )
-
+        
+        decode_end = (
+            time.perf_counter()
+        )
 
         # Postprocess Prediction
+        post_start = (
+            time.perf_counter()
+        )
+        
         prediction = (
             postprocess_prediction(
                 prediction
             )
         )
+        
+        post_end = (
+            time.perf_counter()
+        )
 
+
+        pipeline_end = (
+            time.perf_counter()
+        )
+        
+        print(
+            "\n"
+            "===== MODEL PROFILE =====\n"
+            f"Video Load      : "
+            f"{load_end - load_start:.2f}s\n"
+            f"Expand Dim      : "
+            f"{expand_end - expand_start:.4f}s\n"
+            f"TF Predict      : "
+            f"{predict_end - predict_start:.2f}s\n"
+            f"CTC Decode      : "
+            f"{decode_end - decode_start:.2f}s\n"
+            f"Postprocess     : "
+            f"{post_end - post_start:.2f}s\n"
+            f"TOTAL MODEL     : "
+            f"{pipeline_end - pipeline_start:.2f}s\n"
+            "=========================\n"
+        )
 
         return prediction
 

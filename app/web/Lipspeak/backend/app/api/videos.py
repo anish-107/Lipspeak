@@ -128,7 +128,7 @@ async def upload_video(
         
         transcript = (
             TranscriptionService
-            .transcribe_video(
+            .transcribe_grid(
                 contents,
             )
         )
@@ -186,6 +186,130 @@ async def upload_video(
             os.remove(
                 temp_path,
             )
+
+
+@router.post(
+    "/upload-avsr",
+    response_model=UploadResponse,
+)
+async def upload_video_avsr(
+    file: UploadFile = File(...),
+    user: User = Depends(
+        get_current_user,
+    ),
+    db: Session = Depends(
+        get_db,
+    ),
+):
+    """Upload video for AVSR transcription."""
+
+    if not file.filename:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid filename.",
+        )
+
+    contents = await file.read()
+
+    request_start = (
+        time.perf_counter()
+    )
+
+    with tempfile.NamedTemporaryFile(
+        delete=False,
+        suffix=".mp4",
+    ) as temp_file:
+
+        temp_file.write(
+            contents,
+        )
+
+        temp_path = (
+            temp_file.name
+        )
+
+    try:
+
+        s3_start = (
+            time.perf_counter()
+        )
+
+        video_link = (
+            S3Service.upload_video(
+                temp_path,
+                file.filename,
+            )
+        )
+
+        s3_end = (
+            time.perf_counter()
+        )
+
+        transcription_start = (
+            time.perf_counter()
+        )
+
+        transcript = (
+            TranscriptionService
+            .transcribe_avsr(
+                contents,
+            )
+        )
+
+        transcription_end = (
+            time.perf_counter()
+        )
+
+        db_start = (
+            time.perf_counter()
+        )
+
+        video = (
+            VideoService.create_video(
+                db=db,
+                user_id=user.id,
+                filename=file.filename,
+                video_link=video_link,
+                transcript=transcript,
+            )
+        )
+
+        db_end = (
+            time.perf_counter()
+        )
+
+        request_end = (
+            time.perf_counter()
+        )
+
+        print(
+            "\n"
+            "========== AVSR PIPELINE TIMING ==========\n"
+            f"S3 Upload      : "
+            f"{s3_end - s3_start:.2f}s\n"
+            f"Transcription  : "
+            f"{transcription_end - transcription_start:.2f}s\n"
+            f"Database Save  : "
+            f"{db_end - db_start:.2f}s\n"
+            f"Total Request  : "
+            f"{request_end - request_start:.2f}s\n"
+            "==========================================\n"
+        )
+
+        return UploadResponse(
+            transcript=transcript,
+            video_id=video.id,
+        )
+
+    finally:
+
+        if os.path.exists(
+            temp_path,
+        ):
+            os.remove(
+                temp_path,
+            )
+    
 
 
 # Get All Videos

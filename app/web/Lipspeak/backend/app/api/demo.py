@@ -29,7 +29,7 @@ async def transcribe_demo(
 
     transcript = (
         TranscriptionService
-        .transcribe_video(
+        .transcribe_grid(
             contents,
         )
     )
@@ -37,4 +37,24 @@ async def transcribe_demo(
     return {
         "transcript":
         transcript,
+    }
+
+
+@router.post(
+    "/transcribe-avsr",
+)
+async def transcribe_demo_avsr(
+    file: UploadFile = File(...),
+):
+    contents = await file.read()
+
+    transcript = (
+        TranscriptionService
+        .transcribe_avsr(
+            contents,
+        )
+    )
+
+    return {
+        "transcript": transcript,
     }

@@ -3,11 +3,10 @@
 @authors: Anish Kumar, Bidipta Barua,
 Dibyasmita Hati, Arpan Haldar
 @description: Inference abstraction layer.
-@date: 11 June 2026
+@date: 12 June 2026
 @returns: Model inference operations.
 
 """
-
 
 from app.grpc.clients.grid_client import (
     GridClient,
@@ -22,10 +21,9 @@ class InferenceService:
     """Inference service."""
 
     @staticmethod
-    def predict_video(
+    def predict_grid(
         video_bytes: bytes,
     ) -> str:
-        """Predict transcript from video."""
 
         return (
             GridClient.predict(
@@ -34,8 +32,18 @@ class InferenceService:
         )
 
     @staticmethod
+    def predict_avsr(
+        video_bytes: bytes,
+    ) -> str:
+
+        return (
+            AVSRClient.predict(
+                video_bytes,
+            )
+        )
+
+    @staticmethod
     def get_realtime_stub():
-        """Get AVSR streaming stub."""
 
         return (
             AVSRClient.get_stub()

@@ -39,7 +39,7 @@ GRID_STRUCTURE: list[set[str]] = [
     },
 
     set(
-        "abcdefghijklmnopqrstuvwxyz"
+        "abcdefghijklmnopqrstuvxyz"
     ),
 
     {
@@ -72,7 +72,8 @@ def postprocess_prediction(
 
     '''
     @description: Corrects predicted
-    GRID sentence structure.
+    GRID sentence structure and aligns
+    missing single letter words.
 
     @args:
         sentence:
@@ -93,28 +94,73 @@ def postprocess_prediction(
     corrected: list[str] = []
 
 
-    # Correct Sentence
-    for i, word in enumerate(words):
+    # Word Index Tracker
+    w_idx: int = 0
 
-        if i >= len(
-            GRID_STRUCTURE
-        ):
+
+    # Correct Sentence
+    for i in range(
+        len(GRID_STRUCTURE)
+    ):
+
+        # Handle Missing End Words
+        if w_idx >= len(words):
 
             corrected.append(
-                word
+                correct_word(
+                    "",
+                    GRID_STRUCTURE[i]
+                )
             )
 
             continue
 
 
+        # Current Word
+        current_word: str = (
+            words[w_idx]
+        )
+
+
+        # Check For Dropped Letter
+        if (
+            i == 3
+            and
+            current_word in GRID_STRUCTURE[4]
+        ):
+
+            corrected.append(
+                correct_word(
+                    "",
+                    GRID_STRUCTURE[i]
+                )
+            )
+
+            continue
+
+
+        # Correct Current Word
         corrected.append(
             correct_word(
-                word,
+                current_word,
                 GRID_STRUCTURE[i]
             )
         )
 
 
+        w_idx += 1
+
+
+    # Append Remaining Words
+    while w_idx < len(words):
+
+        corrected.append(
+            words[w_idx]
+        )
+
+        w_idx += 1
+
+
     return " ".join(
         corrected
-    )
+    ).strip()

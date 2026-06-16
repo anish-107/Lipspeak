@@ -8,8 +8,6 @@ Dibyasmita Hati, Arpan Haldar
 
 """
 
-
-# Imports
 from fastapi import (
     APIRouter,
     WebSocket,
@@ -21,11 +19,9 @@ from app.services.realtime_transcription_service import (
 )
 
 
-# Router
 router = APIRouter()
 
 
-# Realtime Endpoint
 @router.websocket(
     "/ws/realtime",
 )
@@ -35,6 +31,10 @@ async def realtime_socket(
     """Realtime websocket endpoint."""
 
     await websocket.accept()
+
+    print(
+        "Realtime session started."
+    )
 
     service = (
         RealtimeTranscriptionService()
@@ -48,7 +48,6 @@ async def realtime_socket(
                 await websocket.receive()
             )
 
-            # Binary Video Chunk
             if (
                 "bytes" in message
                 and message["bytes"]
@@ -65,14 +64,15 @@ async def realtime_socket(
                     )
                 )
 
-                await websocket.send_json(
-                    {
-                        "transcript":
-                        transcript,
-                    }
-                )
+                if transcript:
 
-            # Text Message
+                    await websocket.send_json(
+                        {
+                            "transcript":
+                            transcript,
+                        }
+                    )
+
             elif (
                 "text" in message
                 and message["text"]
@@ -87,14 +87,15 @@ async def realtime_socket(
                     )
                 )
 
-                await websocket.send_json(
-                    {
-                        "transcript":
-                        transcript,
-                    }
-                )
+                if transcript:
 
-            # Disconnect Event
+                    await websocket.send_json(
+                        {
+                            "transcript":
+                            transcript,
+                        }
+                    )
+
             elif (
                 message["type"]
                 == "websocket.disconnect"
@@ -104,7 +105,7 @@ async def realtime_socket(
     except WebSocketDisconnect:
 
         print(
-            "Realtime session ended.",
+            "Realtime session ended."
         )
 
     finally:
@@ -112,6 +113,7 @@ async def realtime_socket(
         service.reset()
 
         try:
+
             await websocket.close()
         except Exception:
             pass

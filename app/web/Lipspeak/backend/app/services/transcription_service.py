@@ -18,16 +18,25 @@ class TranscriptionService:
     """Transcription service."""
 
     @staticmethod
-    def transcribe_video(
+    def transcribe_grid(
         video_bytes: bytes,
     ) -> str:
-        """Generate transcript from video."""
 
-        transcript = (
+        return (
             InferenceService
-            .predict_video(
+            .predict_grid(
                 video_bytes,
             )
         )
 
-        return transcript
+    @staticmethod
+    def transcribe_avsr(
+        video_bytes: bytes,
+    ) -> str:
+
+        return (
+            InferenceService
+            .predict_avsr(
+                video_bytes,
+            )
+        )

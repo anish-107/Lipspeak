@@ -16,6 +16,7 @@ ENV/
 pythonenv/
 pip-log.txt
 pip-delete-this-directory.txt
+*.pth
 
 
 # Python Files

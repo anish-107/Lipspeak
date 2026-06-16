@@ -6,7 +6,6 @@
  *
  */
 
-
 interface RealtimeServiceOptions {
   onOpen?: () => void;
 
@@ -20,7 +19,6 @@ interface RealtimeServiceOptions {
     transcript: string,
   ) => void;
 }
-
 
 export class RealtimeService {
   private socket:
@@ -46,6 +44,9 @@ export class RealtimeService {
       this.socket.readyState ===
         WebSocket.OPEN
     ) {
+      console.log(
+        "[WS] Already connected",
+      );
       return;
     }
 
@@ -54,12 +55,21 @@ export class RealtimeService {
         .NEXT_PUBLIC_WS_URL ??
       "ws://localhost:8000/ws/realtime";
 
+    console.log(
+      "[WS] Connecting:",
+      websocketUrl,
+    );
+
     this.socket =
       new WebSocket(
         websocketUrl,
       );
 
     this.socket.onopen = () => {
+      console.log(
+        "[WS] Connected",
+      );
+
       this.reconnectAttempts = 0;
 
       options?.onOpen?.();
@@ -69,21 +79,36 @@ export class RealtimeService {
       event: MessageEvent,
     ) => {
       try {
+        console.log(
+          "[WS] RAW MESSAGE:",
+          event.data,
+        );
+
         const data =
           JSON.parse(
             event.data,
           );
 
+        console.log(
+          "[WS] PARSED MESSAGE:",
+          data,
+        );
+
         if (
           data.transcript
         ) {
+          console.log(
+            "[WS] TRANSCRIPT RECEIVED:",
+            data.transcript,
+          );
+
           options?.onTranscript?.(
             data.transcript,
           );
         }
       } catch (error) {
         console.error(
-          "Failed to parse websocket message:",
+          "[WS] Failed to parse message:",
           error,
         );
       }
@@ -92,17 +117,39 @@ export class RealtimeService {
     this.socket.onerror = (
       event,
     ) => {
+      console.error(
+        "[WS] ERROR:",
+        event,
+      );
+
       options?.onError?.(
         event,
       );
     };
 
-    this.socket.onclose = () => {
+    this.socket.onclose = (
+      event,
+    ) => {
+      console.warn(
+        "[WS] CLOSED:",
+        {
+          code: event.code,
+          reason:
+            event.reason,
+          wasClean:
+            event.wasClean,
+        },
+      );
+
       options?.onClose?.();
 
       if (
         !this.manuallyDisconnected
       ) {
+        console.log(
+          "[WS] Attempting reconnect...",
+        );
+
         this.tryReconnect(
           options,
         );
@@ -117,10 +164,17 @@ export class RealtimeService {
       this.reconnectAttempts >=
       this.maxReconnects
     ) {
+      console.error(
+        "[WS] Max reconnect attempts reached",
+      );
       return;
     }
 
     this.reconnectAttempts++;
+
+    console.log(
+      `[WS] Reconnect attempt ${this.reconnectAttempts}/${this.maxReconnects}`,
+    );
 
     setTimeout(() => {
       this.connect(
@@ -140,13 +194,26 @@ export class RealtimeService {
       this.socket.readyState !==
         WebSocket.OPEN
     ) {
+      console.warn(
+        "[WS] Tried to send while disconnected",
+      );
       return;
     }
 
-    this.socket.send(data);
+    console.log(
+      "[WS] Sending chunk",
+    );
+
+    this.socket.send(
+      data,
+    );
   }
 
   disconnect() {
+    console.log(
+      "[WS] Manual disconnect",
+    );
+
     this.manuallyDisconnected =
       true;
 
@@ -163,7 +230,6 @@ export class RealtimeService {
     );
   }
 }
-
 
 export const realtimeService =
   new RealtimeService();

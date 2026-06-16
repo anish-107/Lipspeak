@@ -18,9 +18,7 @@ from app.services.realtime_transcription_service import (
     RealtimeTranscriptionService,
 )
 
-
 router = APIRouter()
-
 
 @router.websocket(
     "/ws/realtime",
@@ -31,89 +29,59 @@ async def realtime_socket(
     """Realtime websocket endpoint."""
 
     await websocket.accept()
+    print("Realtime session started.")
 
-    print(
-        "Realtime session started."
-    )
-
-    service = (
-        RealtimeTranscriptionService()
-    )
+    service = RealtimeTranscriptionService()
 
     try:
-
         while True:
+            message = await websocket.receive()
 
-            message = (
-                await websocket.receive()
-            )
+            if "bytes" in message and message["bytes"] is not None:
+                chunk = message["bytes"]
+                
+                # AWAIT the new async service method
+                transcript = await service.process_chunk(chunk)
 
-            if (
-                "bytes" in message
-                and message["bytes"]
-                is not None
-            ):
+                if transcript:
+                    await websocket.send_json({
+                        "transcript": transcript,
+                    })
 
-                chunk = (
-                    message["bytes"]
-                )
-
-                transcript = (
-                    service.process_chunk(
-                        chunk,
-                    )
+            elif "text" in message and message["text"] is not None:
+                
+                # AWAIT the new async service method
+                transcript = await service.process_chunk(
+                    message["text"].encode()
                 )
 
                 if transcript:
-
-                    await websocket.send_json(
-                        {
-                            "transcript":
-                            transcript,
-                        }
+                    print(
+                        "\nSENDING TO FRONTEND:",
+                        repr(transcript),
+                        "\n",
                     )
+                
+                    await websocket.send_json({
+                        "transcript": transcript,
+                    })
+                
+                    print("Frontend send completed.")
 
-            elif (
-                "text" in message
-                and message["text"]
-                is not None
-            ):
-
-                transcript = (
-                    service.process_chunk(
-                        message[
-                            "text"
-                        ].encode(),
-                    )
-                )
-
-                if transcript:
-
-                    await websocket.send_json(
-                        {
-                            "transcript":
-                            transcript,
-                        }
-                    )
-
-            elif (
-                message["type"]
-                == "websocket.disconnect"
-            ):
+            elif message.get("type") == "websocket.disconnect":
                 break
 
     except WebSocketDisconnect:
+        print("Realtime session ended.")
 
-        print(
-            "Realtime session ended."
-        )
+    except Exception as e:
+        import traceback
+        print("WEBSOCKET ERROR")
+        traceback.print_exc()
 
     finally:
-
         service.reset()
-
         try:
-
             await websocket.close()
         except Exception:
             pass

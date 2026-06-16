@@ -146,13 +146,10 @@ export function useRealtime() {
             );
           },
 
-          onTranscript: (
-            transcript,
-          ) => {
-            setTranscript(
-              transcript,
-            );
-          },
+          onTranscript: (newTranscript) => {
+            // FIX: Just replace the state, do not append to it.
+            setTranscript(newTranscript);
+          }
         });
 
         if (
@@ -196,19 +193,6 @@ export function useRealtime() {
       "disconnected",
     );
   };
-
-
-  /* ---------------------------------------------------------------------- */
-  /*                              Cleanup                                   */
-  /* ---------------------------------------------------------------------- */
-  
-  useEffect(() => {
-    return () => {
-      realtimeService.disconnect();
-    };
-  }, []);
-
-  
 
   /* ---------------------------------------------------------------------- */
   /*                                Return                                  */

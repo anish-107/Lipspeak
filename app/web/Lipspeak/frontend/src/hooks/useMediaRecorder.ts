@@ -25,9 +25,11 @@ export function useMediaRecorder() {
         const recordWindow = () => {
           if (!streamRef.current) return;
 
-          const recorder = new MediaRecorder(streamRef.current, {
-            mimeType: "video/webm",
-          });
+          // const recorder = new MediaRecorder(streamRef.current, {
+          //   mimeType: "video/webm",
+          // });
+          // 
+          const recorder = new MediaRecorder(streamRef.current);
           
           const chunks: Blob[] = [];
 
@@ -40,7 +42,7 @@ export function useMediaRecorder() {
           recorder.onstop = () => {
             if (chunks.length > 0) {
               // Create a complete, playable video file with headers
-              const fullVideoBlob = new Blob(chunks, { type: "video/webm" });
+              const fullVideoBlob = new Blob(chunks, { type: recorder.mimeType });
               onChunk(fullVideoBlob);
             }
 

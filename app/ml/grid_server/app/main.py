@@ -9,6 +9,8 @@ GRID lip reading application.
 
 
 # Imports
+import os 
+
 from contextlib import (
     asynccontextmanager,
 )
@@ -37,6 +39,9 @@ from app.utils.model_loader import (
     load_model,
 )
 
+from fastapi.middleware.cors import (
+    CORSMiddleware,
+)
 
 
 # Application Lifespan
@@ -73,7 +78,8 @@ async def lifespan(
             0,
         )
 
-
+# Environment
+ENVIRONMENT = os.getenv("ENVIRONMENT", "production")
 
 # FastAPI Application
 app: FastAPI = FastAPI(
@@ -83,9 +89,28 @@ app: FastAPI = FastAPI(
         "using TensorFlow and MediaPipe."
     ),
     version="1.0.0",
-    lifespan=lifespan
+    lifespan=lifespan,
+    docs_url="/docs" if ENVIRONMENT == "development" else None, 
+    redoc_url="/redoc" if ENVIRONMENT == "development" else None, 
+    openapi_url="/openapi.json" if ENVIRONMENT == "development" else None
 )
 
+origins = [
+    "https://lipspeak.anishx.me",  
+]
+
+
+
+if ENVIRONMENT == "development":
+    origins.append("http://localhost:3000")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],           
+    allow_headers=["*"],          
+)
 
 
 # Register Routes
@@ -101,3 +126,15 @@ app.include_router(
 app.include_router(
     root_router
 )
+
+
+# Health Check
+@app.get("/")
+def root():
+    """Health check endpoint."""
+
+    return {
+        "message": (
+            "Lipspeak AI Inference Server Running"
+        )
+    }

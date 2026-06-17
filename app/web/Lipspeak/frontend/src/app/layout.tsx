@@ -13,6 +13,7 @@ import { cookies } from "next/headers";
 import "./globals.css";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { AuthProvider } from "@/providers/AuthProvider";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 
 
@@ -57,6 +58,7 @@ export default async function RootLayout({
             {children}
           </AuthProvider>
         </ThemeProvider>
+        <SpeedInsights />
       </body>
     </html>
   );

@@ -1,41 +1,36 @@
-Installed and configured Vercel Speed Insights for the Next.js project.
+Installed and configured Vercel Web Analytics for the project.
 
-IMPLEMENTATION DETAILS:
-======================
+## Changes Made:
 
-1. Package Installation:
-   - Installed @vercel/speed-insights@2.0.0 using pnpm
-   - Package added to dependencies in package.json
+### 1. Package Installation
+- Installed `@vercel/analytics@2.0.1` using pnpm
+- Updated package.json with the new dependency
+- Updated pnpm-lock.yaml with the resolved dependencies
 
-2. Code Changes:
-   - Modified: src/app/layout.tsx
-     * Added import: `import { SpeedInsights } from "@vercel/speed-insights/next";`
-     * Added <SpeedInsights /> component at the end of the body tag
-     * Component placed after ThemeProvider and AuthProvider to ensure proper initialization
+### 2. Analytics Integration
+Modified: `src/app/layout.tsx`
+- Added import statement: `import { Analytics } from "@vercel/analytics/next";`
+- Added `<Analytics />` component to the body, right after `<SpeedInsights />`
+- Follows the official Vercel documentation for Next.js App Router setup
 
-3. Implementation Notes:
-   - Followed official Vercel documentation for Next.js App Router (v13.5+)
-   - Used the framework-specific import from '@vercel/speed-insights/next'
-   - SpeedInsights component is placed in the root layout to ensure it runs on all pages
-   - Component is positioned at the end of the body to avoid blocking page rendering
-   - Preserved existing code structure, providers, and styling
+## Implementation Details:
 
-4. Files Modified:
-   - package.json - Added @vercel/speed-insights dependency
-   - pnpm-lock.yaml - Updated with new dependency tree
-   - src/app/layout.tsx - Added SpeedInsights component
+The implementation follows the official Vercel Analytics quickstart guide for Next.js App Router:
+- Retrieved latest documentation from https://vercel.com/docs/analytics/quickstart
+- Used the framework-specific Next.js App Router instructions
+- Placed the Analytics component in the root layout file (src/app/layout.tsx)
+- Positioned alongside the existing SpeedInsights component for consistency
 
-5. Verification:
-   ✓ Build completed successfully (no errors)
-   ✓ Linter passed (only 1 pre-existing warning unrelated to changes)
-   ✓ TypeScript compilation successful
-   ✓ All 10 routes generated without issues
+## Verification:
 
-NEXT STEPS:
-===========
-To complete the Speed Insights setup:
-1. Deploy the application to Vercel
-2. Enable Speed Insights in the Vercel project dashboard
-3. Speed Insights will automatically start collecting performance metrics after deployment
+✓ Build completed successfully with `pnpm run build`
+✓ Linter passed with no errors (0 errors, 1 pre-existing warning)
+✓ TypeScript compilation successful
+✓ All 10 pages generated correctly
 
-The implementation follows Next.js App Router best practices and is ready for production deployment.
+## Notes:
+
+- The Analytics component will automatically track page views and web vitals
+- To enable analytics in production, the Vercel dashboard must be configured (Analytics section → Enable button)
+- This will add routes scoped at `/_vercel/insights/*` and `/<unique-path>/*` after deployment
+- The project already uses `@vercel/speed-insights`, so the Analytics component integrates seamlessly with existing Vercel tooling

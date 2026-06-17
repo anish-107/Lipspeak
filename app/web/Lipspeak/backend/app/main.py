@@ -46,8 +46,10 @@ from fastapi.middleware.cors import (
 # Application
 app = FastAPI(
     title=settings.APP_NAME,
+    docs_url=None, 
+    redoc_url=None, 
+    openapi_url=None
 )
-
 
 app.include_router(
     auth_router,

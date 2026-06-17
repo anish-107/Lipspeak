@@ -10,6 +10,7 @@
 
 # Imports
 from fastapi import FastAPI
+import os
 
 from app.core.config import (
     settings,
@@ -43,12 +44,31 @@ from fastapi.middleware.cors import (
     CORSMiddleware,
 )
 
+# Environment
+ENVIRONMENT = os.getenv("ENVIRONMENT", "production")
+
 # Application
 app = FastAPI(
     title=settings.APP_NAME,
-    docs_url=None, 
-    redoc_url=None, 
-    openapi_url=None
+    docs_url="/docs" if ENVIRONMENT == "development" else None, 
+    redoc_url="/redoc" if ENVIRONMENT == "development" else None, 
+    openapi_url="/openapi.json" if ENVIRONMENT == "development" else None
+)
+
+origins = [
+    "https://lipspeak.anishx.me",  
+]
+
+
+if ENVIRONMENT == "development":
+    origins.append("http://localhost:3000")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],           
+    allow_headers=["*"],          
 )
 
 app.include_router(

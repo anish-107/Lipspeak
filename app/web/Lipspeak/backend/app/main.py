@@ -57,6 +57,7 @@ app = FastAPI(
 
 origins = [
     "https://lipspeak.anishx.me",  
+    "http://localhost:3000"
 ]
 
 

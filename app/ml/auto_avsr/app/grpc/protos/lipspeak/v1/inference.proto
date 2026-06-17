@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package lipspeak.v1;
+
+
+service InferenceService {
+
+  rpc PredictVideo (
+    PredictVideoRequest
+  ) returns (
+    PredictVideoResponse
+  );
+
+  rpc PredictRealtime (
+    stream PredictRealtimeRequest
+  ) returns (
+    stream PredictRealtimeResponse
+  );
+}
+
+
+message PredictVideoRequest {
+  bytes video = 1;
+}
+
+
+message PredictVideoResponse {
+  string transcript = 1;
+}
+
+
+message PredictRealtimeRequest {
+  bytes chunk = 1;
+}
+
+
+message PredictRealtimeResponse {
+  string transcript = 1;
+}
